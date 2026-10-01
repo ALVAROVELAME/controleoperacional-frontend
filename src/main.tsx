@@ -4,7 +4,7 @@ import App from './App.tsx';
 import './index.css';
 
 // Aplica o tema salvo no <html data-theme="dark|light">
-const temaSalvo = localStorage.getItem('agrogestor:tema');
+const temaSalvo = localStorage.getItem('opskanban:tema');
 if (temaSalvo === 'escuro') {
   document.documentElement.setAttribute('data-theme', 'dark');
 }

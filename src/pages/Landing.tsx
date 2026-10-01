@@ -1,24 +1,27 @@
+// src/pages/Landing.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 /* ============================================================
    CSS global do componente
+   Paleta: Blue + Slate
    ============================================================ */
 const STYLES = `
 .ag {
   --bg: #ffffff;
-  --bg-soft: #f6faf7;
-  --ink: #0b1a12;
-  --ink-soft: #3d5648;       /* 7.87:1 no branco — AAA */
-  --muted: #4f6a5b;          /* 5.91:1 no branco — AA  */
-  --line: #e6efe9;
-  --brand: #166534;          /* 7.55:1 no branco — AAA */
-  --brand-2: #22c55e;
-  --brand-3: #0f4a24;
+  --bg-soft: #eff6ff;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --brand: #2563eb;
+  --brand-2: #3b82f6;
+  --brand-3: #1d4ed8;
+  --brand-soft: #eff6ff;
   --radius: 16px;
-  --shadow-sm: 0 1px 2px rgba(11,26,18,.06);
-  --shadow-md: 0 10px 30px -12px rgba(11,26,18,.18);
-  --shadow-lg: 0 30px 70px -25px rgba(11,26,18,.35);
+  --shadow-sm: 0 1px 2px rgba(15,23,42,.06);
+  --shadow-md: 0 10px 30px -12px rgba(15,23,42,.18);
+  --shadow-lg: 0 30px 70px -25px rgba(15,23,42,.35);
 
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--ink);
@@ -42,7 +45,6 @@ const STYLES = `
   outline-offset: 3px;
   border-radius: 8px;
 }
-/* Anel adaptado para fundos escuros/verdes */
 .ag-btn-primary:focus-visible,
 .ag-cta-primary:focus-visible,
 .ag-final-btn:focus-visible,
@@ -50,7 +52,7 @@ const STYLES = `
 .ag-plan.featured .ag-plan-cta:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(22,101,52,.55);
+  box-shadow: 0 0 0 6px rgba(37,99,235,.55);
 }
 
 /* ---------- Skip link ---------- */
@@ -70,7 +72,7 @@ const STYLES = `
 }
 .ag-skip:focus { top: 0; outline: 3px solid #fff; outline-offset: 2px; }
 
-/* Offset para âncoras — evita sobreposição com a navbar fixa */
+/* Offset para âncoras */
 .ag [id] { scroll-margin-top: 96px; }
 
 /* ---------- Reveal on scroll ---------- */
@@ -104,7 +106,7 @@ const STYLES = `
 .ag-nav.is-scrolled {
   background: rgba(255,255,255,.94);
   border-bottom-color: var(--line);
-  box-shadow: 0 1px 0 rgba(11,26,18,.02), 0 8px 24px -16px rgba(11,26,18,.15);
+  box-shadow: 0 1px 0 rgba(15,23,42,.02), 0 8px 24px -16px rgba(15,23,42,.15);
 }
 .ag-nav-inner {
   max-width: 1200px; margin: 0 auto;
@@ -119,8 +121,8 @@ const STYLES = `
 .ag-logo-mark {
   width: 34px; height: 34px; border-radius: 10px;
   display: grid; place-items: center; font-size: 18px;
-  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-  box-shadow: inset 0 0 0 1px rgba(22,101,52,.08);
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
 }
 .ag-nav-links { display: flex; gap: 4px; align-items: center; }
 .ag-nav-link {
@@ -141,10 +143,10 @@ const STYLES = `
   display: inline-flex; align-items: center; justify-content: center;
   padding: 9px 18px; font-size: 14px; font-weight: 600;
   background: var(--brand); color: #fff; border-radius: 10px;
-  box-shadow: 0 6px 16px -8px rgba(22,101,52,.55);
+  box-shadow: 0 6px 16px -8px rgba(37,99,235,.55);
   transition: transform .15s ease, box-shadow .2s ease, background .2s;
 }
-.ag-btn-primary:hover { transform: translateY(-1px); background: var(--brand-3); box-shadow: 0 10px 22px -10px rgba(22,101,52,.7); }
+.ag-btn-primary:hover { transform: translateY(-1px); background: var(--brand-3); box-shadow: 0 10px 22px -10px rgba(37,99,235,.7); }
 .ag-burger {
   display: none; width: 40px; height: 40px;
   background: transparent; border: 1px solid var(--line); border-radius: 10px;
@@ -182,9 +184,9 @@ const STYLES = `
   position: relative;
   padding: 132px 0 96px;
   background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(34,197,94,.12), transparent 60%),
-    radial-gradient(900px 500px at -10% 10%, rgba(22,101,52,.08), transparent 55%),
-    linear-gradient(180deg, #f6faf7 0%, #ffffff 100%);
+    radial-gradient(1200px 600px at 80% -10%, rgba(59,130,246,.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(37,99,235,.08), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
   overflow: hidden;
 }
 .ag-hero-inner {
@@ -202,7 +204,7 @@ const STYLES = `
 }
 .ag-badge-dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--brand-2);
-  box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
 }
 .ag-hero-title {
   font-size: clamp(34px, 5vw, 56px);
@@ -228,9 +230,9 @@ const STYLES = `
 }
 .ag-cta-primary {
   background: var(--brand); color: #fff;
-  box-shadow: 0 12px 28px -12px rgba(22,101,52,.6);
+  box-shadow: 0 12px 28px -12px rgba(37,99,235,.55);
 }
-.ag-cta-primary:hover { transform: translateY(-2px); background: var(--brand-3); box-shadow: 0 18px 36px -14px rgba(22,101,52,.7); }
+.ag-cta-primary:hover { transform: translateY(-2px); background: var(--brand-3); box-shadow: 0 18px 36px -14px rgba(37,99,235,.7); }
 .ag-cta-ghost {
   background: #fff; color: var(--brand);
   border: 1px solid var(--line);
@@ -252,7 +254,7 @@ const STYLES = `
 }
 .ag-mock-head {
   display: flex; align-items: center; gap: 6px;
-  padding: 12px 16px; background: #f8faf9; border-bottom: 1px solid var(--line);
+  padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid var(--line);
 }
 .ag-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .ag-mock-url {
@@ -264,7 +266,7 @@ const STYLES = `
 .ag-mock-body { padding: 20px; }
 .ag-mock-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
 .ag-mini {
-  background: linear-gradient(180deg, #f9fdfa, #f4faf5);
+  background: linear-gradient(180deg, #f8fafc, #eff6ff);
   border: 1px solid var(--line);
   border-radius: 12px; padding: 12px 8px;
   text-align: center;
@@ -275,7 +277,7 @@ const STYLES = `
 .ag-mini-value { font-size: 16px; font-weight: 700; color: var(--brand); margin-top: 2px; white-space: nowrap; }
 .ag-mock-row { display: grid; grid-template-columns: 76px 1fr 48px; gap: 10px; align-items: center; padding: 6px 0; }
 .ag-mock-row-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ag-mock-bar { height: 8px; background: #eef4ee; border-radius: 999px; overflow: hidden; }
+.ag-mock-bar { height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
 .ag-mock-bar-fill {
   height: 100%; border-radius: 999px;
   background: linear-gradient(90deg, var(--brand), var(--brand-2));
@@ -324,7 +326,7 @@ const STYLES = `
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center;
 }
 .ag-stat-num { font-size: clamp(26px, 3.4vw, 38px); font-weight: 800; letter-spacing: -.03em; line-height: 1; color: #fff; }
-.ag-stat-label { font-size: 13px; color: #d1fae5; margin-top: 10px; font-weight: 500; }
+.ag-stat-label { font-size: 13px; color: #dbeafe; margin-top: 10px; font-weight: 500; }
 @media (max-width: 720px) {
   .ag-stats-inner { grid-template-columns: repeat(2, 1fr); gap: 32px 20px; }
 }
@@ -353,12 +355,12 @@ const STYLES = `
   padding: 28px 24px;
   transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
-.ag-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #cfe3d5; }
+.ag-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #cbd5e1; }
 .ag-feature-icon {
   width: 48px; height: 48px; border-radius: 12px;
   display: grid; place-items: center; font-size: 22px;
-  background: linear-gradient(135deg, #ecfdf3, #dcfce7);
-  border: 1px solid #d7efe0;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid #bfdbfe;
   margin-bottom: 18px;
 }
 .ag-feature-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
@@ -375,13 +377,13 @@ const STYLES = `
   border-radius: 50%; background: #fff;
   display: grid; place-items: center; font-size: 30px;
   border: 1px solid var(--line);
-  box-shadow: 0 12px 24px -14px rgba(22,101,52,.35);
+  box-shadow: 0 12px 24px -14px rgba(37,99,235,.35);
 }
 .ag-step-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
 .ag-step-desc { font-size: 14px; color: var(--muted); line-height: 1.65; max-width: 280px; margin: 0 auto; }
 .ag-step-arrow {
   position: absolute; top: 44px; right: -18px;
-  font-size: 20px; color: #9dbfa8; user-select: none;
+  font-size: 20px; color: #94a3b8; user-select: none;
 }
 @media (max-width: 900px) {
   .ag-steps { grid-template-columns: 1fr; gap: 40px; }
@@ -397,7 +399,7 @@ const STYLES = `
   transition: transform .25s, box-shadow .25s;
 }
 .ag-test:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-.ag-stars { color: #b45309; letter-spacing: 3px; font-size: 15px; font-weight: 700; }
+.ag-stars { color: #d97706; letter-spacing: 3px; font-size: 15px; font-weight: 700; }
 .ag-test-text { font-size: 15px; color: var(--ink-soft); line-height: 1.65; flex: 1; }
 .ag-test-author { display: flex; align-items: center; gap: 12px; }
 .ag-avatar {
@@ -421,15 +423,15 @@ const STYLES = `
 .ag-plan:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .ag-plan.featured {
   border-color: var(--brand);
-  box-shadow: 0 24px 60px -25px rgba(22,101,52,.4);
-  background: linear-gradient(180deg, #ffffff 0%, #f8fdf9 100%);
+  box-shadow: 0 24px 60px -25px rgba(37,99,235,.4);
+  background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
 }
 .ag-plan-badge {
   position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
   background: var(--brand); color: #fff;
   font-size: 10px; font-weight: 700; letter-spacing: .12em;
   padding: 5px 12px; border-radius: 999px;
-  box-shadow: 0 8px 20px -8px rgba(22,101,52,.7);
+  box-shadow: 0 8px 20px -8px rgba(37,99,235,.7);
   white-space: nowrap;
 }
 .ag-plan-name { font-size: 16px; font-weight: 700; color: var(--ink-soft); }
@@ -442,7 +444,7 @@ const STYLES = `
 .ag-check {
   width: 18px; height: 18px; border-radius: 50%;
   display: inline-grid; place-items: center;
-  background: #dcfce7; color: var(--brand);
+  background: #dbeafe; color: var(--brand);
   font-size: 10px; font-weight: 800; flex-shrink: 0;
 }
 .ag-plan-cta {
@@ -476,16 +478,14 @@ const STYLES = `
   font-size: 16px; font-weight: 600; line-height: 1;
   transition: transform .25s ease, background .2s;
 }
-.ag-faq-item.open .ag-faq-ic { transform: rotate(45deg); background: #dcfce7; }
+.ag-faq-item.open .ag-faq-ic { transform: rotate(45deg); background: #dbeafe; }
 .ag-faq-a {
   font-size: 14px; color: var(--ink-soft); line-height: 1.75;
   padding: 0 4px 22px; animation: agFade .3s ease;
 }
 @keyframes agFade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-/* ---------- CTA Final ----------
-   Especificidade .ag .ag-final-* para vencer .ag h2 / .ag p
-*/
+/* ---------- CTA Final ---------- */
 .ag-final {
   position: relative; overflow: hidden;
   background: linear-gradient(135deg, var(--brand-3) 0%, var(--brand) 100%);
@@ -505,7 +505,7 @@ const STYLES = `
 }
 .ag .ag-final-sub {
   font-size: 17px; line-height: 1.65;
-  color: #ecfdf3;
+  color: #dbeafe;
   margin: 0 0 34px;
 }
 .ag .ag-final-btn {
@@ -519,12 +519,12 @@ const STYLES = `
 .ag .ag-final-btn:hover { transform: translateY(-2px); box-shadow: 0 24px 44px -18px rgba(0,0,0,.6); }
 .ag .ag-final-note {
   font-size: 13px;
-  color: #d1fae5;
+  color: #bfdbfe;
   margin: 16px 0 0;
 }
 
 /* ---------- Footer ---------- */
-.ag-footer { background: #0a1710; color: #d7e3da; padding: 64px 24px 28px; }
+.ag-footer { background: #0b0f1a; color: #cbd5e1; padding: 64px 24px 28px; }
 .ag-footer-inner {
   max-width: 1200px; margin: 0 auto;
   display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
@@ -535,9 +535,9 @@ const STYLES = `
   font-size: 12px; font-weight: 700; color: #ffffff;
   text-transform: uppercase; letter-spacing: .14em; margin-bottom: 6px;
 }
-.ag-footer-desc { font-size: 13px; line-height: 1.7; color: #c2d0c6; margin-top: 8px; max-width: 320px; }
+.ag-footer-desc { font-size: 13px; line-height: 1.7; color: #94a3b8; margin-top: 8px; max-width: 320px; }
 .ag-footer-link {
-  font-size: 13px; color: #d7e3da;
+  font-size: 13px; color: #cbd5e1;
   background: transparent; border: 0; padding: 0; text-align: left;
   cursor: pointer; font-family: inherit;
   transition: color .2s;
@@ -548,10 +548,10 @@ const STYLES = `
   max-width: 1200px; margin: 0 auto;
   padding-top: 24px; border-top: 1px solid rgba(255,255,255,.12);
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-  font-size: 12px; color: #b9c9bd;
+  font-size: 12px; color: #94a3b8;
 }
 .ag-logo.on-dark { color: #ffffff; }
-.ag-logo.on-dark .ag-logo-mark { background: rgba(34,197,94,.15); box-shadow: inset 0 0 0 1px rgba(34,197,94,.3); }
+.ag-logo.on-dark .ag-logo-mark { background: rgba(96,165,250,.15); box-shadow: inset 0 0 0 1px rgba(96,165,250,.3); }
 
 @media (max-width: 860px) {
   .ag-footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -576,7 +576,6 @@ export default function Landing() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Trava o scroll do body enquanto o menu mobile estiver aberto
   useEffect(() => {
     if (!menuAberto) return;
     const original = document.body.style.overflow;
@@ -584,7 +583,6 @@ export default function Landing() {
     return () => { document.body.style.overflow = original; };
   }, [menuAberto]);
 
-  // Reveal-on-scroll robusto
   useEffect(() => {
     const els = Array.from(document.querySelectorAll<HTMLElement>('.ag [data-reveal]'));
     const reveal = (el: Element) => el.classList.add('is-visible');
@@ -617,7 +615,6 @@ export default function Landing() {
     return () => io.disconnect();
   }, []);
 
-  // Fecha o menu ANTES de rolar — libera o overflow do body primeiro
   const scrollPara = (id: string) => {
     setMenuAberto(false);
     requestAnimationFrame(() => {
@@ -629,15 +626,14 @@ export default function Landing() {
     <>
       <style>{STYLES}</style>
       <div className="ag" data-scrolled={scrolled ? 'true' : 'false'}>
-        {/* Skip link — primeiro elemento focável */}
         <a href="#ag-main" className="ag-skip">Ir para o conteúdo principal</a>
 
         {/* ===================== NAVBAR ===================== */}
         <header className={`ag-nav${scrolled ? ' is-scrolled' : ''}`} role="banner">
           <div className="ag-nav-inner">
-            <Link to="/" className="ag-logo" onClick={() => setMenuAberto(false)} aria-label="AgroGestor — início">
-              <span className="ag-logo-mark" aria-hidden="true">🐄</span>
-              <span>AgroGestor</span>
+            <Link to="/" className="ag-logo" onClick={() => setMenuAberto(false)} aria-label="OpsKanban — início">
+              <span className="ag-logo-mark" aria-hidden="true">📋</span>
+              <span>OpsKanban</span>
             </Link>
 
             <nav className="ag-nav-links" aria-label="Principal">
@@ -685,19 +681,18 @@ export default function Landing() {
               <div className="ag-hero-text" data-reveal>
                 <span className="ag-badge">
                   <span className="ag-badge-dot" aria-hidden="true" />
-                  Novo — versão 2.0 disponível
+                  Novo — Kanban operacional disponível
                 </span>
 
                 <h1 className="ag-hero-title">
-                  Gestão do seu rebanho,
+                  Controle operacional
                   <br />
-                  <em>simples como deve ser.</em>
+                  <em>simples e visual.</em>
                 </h1>
 
                 <p className="ag-hero-sub">
-                  Controle produção, categorias e relatórios do seu rebanho em uma
-                  plataforma moderna. Sem planilhas, sem complicação — feito para o
-                  produtor rural.
+                  Organize tarefas, acompanhe o fluxo de trabalho e mantenha sua equipe
+                  alinhada com um quadro Kanban moderno. Sem planilhas, sem bagunça.
                 </p>
 
                 <div className="ag-hero-actions">
@@ -717,39 +712,39 @@ export default function Landing() {
               </div>
 
               <div className="ag-hero-visual" data-reveal aria-hidden="true">
-                <div className="ag-blob" style={{ width: 260, height: 260, top: -60, right: -60, background: '#4ade80' }} />
-                <div className="ag-blob" style={{ width: 220, height: 220, bottom: -50, left: -50, background: '#166534' }} />
+                <div className="ag-blob" style={{ width: 260, height: 260, top: -60, right: -60, background: '#60a5fa' }} />
+                <div className="ag-blob" style={{ width: 220, height: 220, bottom: -50, left: -50, background: '#2563eb' }} />
 
                 <div className="ag-mock">
                   <div className="ag-mock-head">
                     <span className="ag-dot" style={{ background: '#ff5f56' }} />
                     <span className="ag-dot" style={{ background: '#ffbd2e' }} />
                     <span className="ag-dot" style={{ background: '#27c93f' }} />
-                    <span className="ag-mock-url">agrogestor.app/dashboard</span>
+                    <span className="ag-mock-url">opskanban.app/dashboard</span>
                   </div>
 
                   <div className="ag-mock-body">
                     <div className="ag-mock-stats">
-                      <MiniStat icon="🐮" label="Animais" value="128" />
-                      <MiniStat icon="🥛" label="Produção" value="2.4k L" />
-                      <MiniStat icon="📊" label="Média" value="18.7 L" />
+                      <MiniStat icon="📋" label="Tarefas" value="47" />
+                      <MiniStat icon="✅" label="Concluídas" value="31" />
+                      <MiniStat icon="⚡" label="Em andamento" value="12" />
                     </div>
 
                     {[
-                      { nome: 'Mimosa', valor: 24, pct: 100 },
-                      { nome: 'Estrela', valor: 20, pct: 83 },
-                      { nome: 'Lua', valor: 16, pct: 66 },
-                      { nome: 'Princesa', valor: 12, pct: 50 },
-                    ].map((a, i) => (
-                      <div key={a.nome} className="ag-mock-row">
-                        <span className="ag-mock-row-label">{a.nome}</span>
+                      { nome: 'A fazer', valor: 8, pct: 100 },
+                      { nome: 'Em progresso', valor: 12, pct: 75 },
+                      { nome: 'Revisão', valor: 6, pct: 50 },
+                      { nome: 'Concluído', valor: 31, pct: 100 },
+                    ].map((col, i) => (
+                      <div key={col.nome} className="ag-mock-row">
+                        <span className="ag-mock-row-label">{col.nome}</span>
                         <div className="ag-mock-bar">
                           <div
                             className="ag-mock-bar-fill"
-                            style={{ width: `${a.pct}%`, animationDelay: `${i * 0.1 + 0.3}s` }}
+                            style={{ width: `${col.pct}%`, animationDelay: `${i * 0.1 + 0.3}s` }}
                           />
                         </div>
-                        <span className="ag-mock-row-value">{a.valor} L</span>
+                        <span className="ag-mock-row-value">{col.valor}</span>
                       </div>
                     ))}
                   </div>
@@ -761,9 +756,9 @@ export default function Landing() {
           {/* ===================== STATS ===================== */}
           <section className="ag-stats" aria-label="Números da plataforma">
             <div className="ag-stats-inner">
-              <StatItem numero="12k+" label="Animais gerenciados" />
-              <StatItem numero="850+" label="Produtores ativos" />
-              <StatItem numero="3.2M" label="Litros registrados" />
+              <StatItem numero="48k+" label="Tarefas gerenciadas" />
+              <StatItem numero="1.2k+" label="Equipes ativas" />
+              <StatItem numero="320k" label="Cards movidos" />
               <StatItem numero="99.9%" label="Uptime garantido" />
             </div>
           </section>
@@ -773,21 +768,21 @@ export default function Landing() {
             <div className="ag-container">
               <header className="ag-section-head" data-reveal>
                 <span className="ag-eyebrow">Recursos</span>
-                <h2 id="features-title" className="ag-title">Tudo que você precisa, em um só lugar</h2>
+                <h2 id="features-title" className="ag-title">Tudo que sua operação precisa</h2>
                 <p className="ag-subtitle">
-                  Ferramentas pensadas para simplificar a rotina do produtor e
-                  aumentar a produtividade do rebanho.
+                  Ferramentas pensadas para organizar o fluxo de trabalho e
+                  aumentar a produtividade da equipe.
                 </p>
               </header>
 
               <div className="ag-features">
                 {[
-                  { icon: '🐄', titulo: 'Cadastro inteligente', desc: 'Registre animais com brinco, nome, categoria e produção em segundos.' },
-                  { icon: '📊', titulo: 'Dashboards em tempo real', desc: 'Visualize KPIs, médias e rankings de produção instantaneamente.' },
-                  { icon: '🔍', titulo: 'Busca avançada', desc: 'Encontre qualquer animal por nome, brinco ou categoria com um clique.' },
-                  { icon: '📈', titulo: 'Relatórios completos', desc: 'Gere relatórios detalhados e exporte em JSON para backup.' },
+                  { icon: '🗂️', titulo: 'Quadros Kanban', desc: 'Crie colunas personalizadas e mova cards com drag & drop intuitivo.' },
+                  { icon: '📊', titulo: 'Visão em tempo real', desc: 'Acompanhe o status de todas as tarefas e gargalos do processo.' },
+                  { icon: '🏷️', titulo: 'Prioridades e tags', desc: 'Organize por urgência, responsável e categoria com filtros rápidos.' },
+                  { icon: '📈', titulo: 'Métricas operacionais', desc: 'Veja throughput, lead time e tarefas concluídas por período.' },
                   { icon: '🌙', titulo: 'Tema claro e escuro', desc: 'Trabalhe confortavelmente de dia ou de madrugada, você escolhe.' },
-                  { icon: '⚡', titulo: 'Atalhos de teclado', desc: 'Command palette (Ctrl+K) para navegar e executar ações em milissegundos.' },
+                  { icon: '⚡', titulo: 'Atalhos de teclado', desc: 'Command palette (Ctrl+K) para criar tarefas e navegar em segundos.' },
                 ].map((f, i) => (
                   <div key={f.titulo} className="ag-card" data-reveal style={{ transitionDelay: `${i * 40}ms` }}>
                     <div className="ag-feature-icon" aria-hidden="true">{f.icon}</div>
@@ -805,14 +800,14 @@ export default function Landing() {
               <header className="ag-section-head" data-reveal>
                 <span className="ag-eyebrow">Como funciona</span>
                 <h2 id="como-title" className="ag-title">Comece em 3 passos simples</h2>
-                <p className="ag-subtitle">Do cadastro ao primeiro relatório em menos de 5 minutos.</p>
+                <p className="ag-subtitle">Do cadastro ao primeiro quadro em menos de 5 minutos.</p>
               </header>
 
               <div className="ag-steps">
                 {[
                   { num: '01', icon: '📝', titulo: 'Crie sua conta', desc: 'Cadastro gratuito, sem cartão de crédito. Confirme o e-mail e pronto.' },
-                  { num: '02', icon: '🐮', titulo: 'Cadastre seus animais', desc: 'Adicione brinco, nome, categoria e produção diária de cada animal.' },
-                  { num: '03', icon: '📈', titulo: 'Acompanhe os resultados', desc: 'Veja dashboards, gráficos e relatórios atualizados em tempo real.' },
+                  { num: '02', icon: '🗂️', titulo: 'Monte seu quadro', desc: 'Crie colunas (A fazer, Em progresso, Concluído) e adicione as primeiras tarefas.' },
+                  { num: '03', icon: '📈', titulo: 'Acompanhe o fluxo', desc: 'Mova cards, atribua responsáveis e veja a operação avançar em tempo real.' },
                 ].map((p, i) => (
                   <div key={p.num} className="ag-step" data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
                     <div className="ag-step-num" aria-hidden="true">{p.num}</div>
@@ -833,15 +828,15 @@ export default function Landing() {
                 <span className="ag-eyebrow">Depoimentos</span>
                 <h2 id="depoimentos-title" className="ag-title">Quem usa, recomenda</h2>
                 <p className="ag-subtitle">
-                  Produtores de todo o Brasil já transformaram sua gestão com o AgroGestor.
+                  Equipes de todo o Brasil já organizaram sua operação com o OpsKanban.
                 </p>
               </header>
 
               <div className="ag-tests">
                 {[
-                  { nome: 'João Pereira', cargo: 'Fazenda Santa Rita · MG', texto: 'Reduzi o tempo gasto com anotações em 80%. Agora tudo está no celular.', iniciais: 'JP' },
-                  { nome: 'Maria Oliveira', cargo: 'Sítio Boa Vista · PR', texto: 'A busca é fantástica. Acho qualquer vaca pelo brinco em segundos.', iniciais: 'MO' },
-                  { nome: 'Carlos Souza', cargo: 'Fazenda Lagoa Azul · GO', texto: 'Os relatórios me ajudaram a aumentar a produção em 15% em 6 meses.', iniciais: 'CS' },
+                  { nome: 'Ana Costa', cargo: 'Ops Manager · São Paulo', texto: 'Reduzi o tempo de alinhamento diário em 70%. Agora todo mundo sabe o que fazer.', iniciais: 'AC' },
+                  { nome: 'Ricardo Lima', cargo: 'Líder de Projetos · Curitiba', texto: 'O quadro visual eliminou a confusão de e-mails e planilhas. Fluxo limpo.', iniciais: 'RL' },
+                  { nome: 'Juliana Mendes', cargo: 'Coordenadora · Belo Horizonte', texto: 'Conseguimos entregar 30% mais rápido só de visualizar os gargalos.', iniciais: 'JM' },
                 ].map((t, i) => (
                   <figure key={t.nome} className="ag-test" data-reveal style={{ transitionDelay: `${i * 60}ms` }}>
                     <div className="ag-stars" aria-label="Avaliação: 5 de 5 estrelas">
@@ -870,7 +865,7 @@ export default function Landing() {
                 <span className="ag-eyebrow">Preços</span>
                 <h2 id="precos-title" className="ag-title">Planos para todos os tamanhos</h2>
                 <p className="ag-subtitle">
-                  Comece grátis e evolua conforme seu rebanho cresce. Sem surpresas.
+                  Comece grátis e evolua conforme sua operação cresce. Sem surpresas.
                 </p>
               </header>
 
@@ -878,19 +873,19 @@ export default function Landing() {
                 {[
                   {
                     nome: 'Grátis', preco: 'R$ 0', periodo: '/ sempre',
-                    desc: 'Ideal para pequenos produtores',
-                    features: ['Até 30 animais', 'Dashboard básico', 'Relatórios essenciais', 'Suporte por e-mail'],
+                    desc: 'Ideal para times pequenos',
+                    features: ['Até 3 quadros', 'Até 100 tarefas', 'Colunas ilimitadas', 'Suporte por e-mail'],
                     cta: 'Começar grátis', destaque: false,
                   },
                   {
                     nome: 'Pro', preco: 'R$ 29', periodo: '/ mês',
                     desc: 'Para quem quer produtividade máxima',
-                    features: ['Animais ilimitados', 'Gráficos avançados', 'Backup automático', 'Tema escuro', 'Suporte prioritário'],
+                    features: ['Quadros ilimitados', 'Tarefas ilimitadas', 'Métricas avançadas', 'Tema escuro', 'Suporte prioritário'],
                     cta: 'Assinar Pro', destaque: true,
                   },
                   {
                     nome: 'Empresa', preco: 'R$ 99', periodo: '/ mês',
-                    desc: 'Multi-fazendas e equipes',
+                    desc: 'Multi-equipes e integrações',
                     features: ['Tudo do Pro', 'Multi-usuários', 'API de integração', 'Relatórios personalizados', 'Gerente de conta'],
                     cta: 'Falar com vendas', destaque: false,
                   },
@@ -932,9 +927,9 @@ export default function Landing() {
 
               <div className="ag-faq" data-reveal>
                 {[
-                  { q: 'Preciso instalar algo?', a: 'Não! O AgroGestor é 100% web. Basta acessar pelo navegador do computador, tablet ou celular.' },
+                  { q: 'Preciso instalar algo?', a: 'Não! O OpsKanban é 100% web. Basta acessar pelo navegador do computador, tablet ou celular.' },
                   { q: 'Meus dados ficam seguros?', a: 'Sim. Todos os dados são salvos automaticamente e você pode exportar um backup em JSON quando quiser.' },
-                  { q: 'Posso usar de graça para sempre?', a: 'Sim! O plano Grátis permite até 30 animais sem custo e sem prazo de expiração.' },
+                  { q: 'Posso usar de graça para sempre?', a: 'Sim! O plano Grátis permite até 3 quadros e 100 tarefas sem custo e sem prazo de expiração.' },
                   { q: 'Funciona offline?', a: 'A plataforma precisa de internet para sincronizar. Mas os dados ficam em cache local para consulta rápida.' },
                   { q: 'Como cancelo minha assinatura?', a: 'A qualquer momento, direto no painel, sem burocracia e sem multa. Você continua com o plano Grátis.' },
                 ].map((item, i) => (
@@ -947,9 +942,9 @@ export default function Landing() {
           {/* ===================== CTA FINAL ===================== */}
           <section className="ag-final" aria-labelledby="cta-final-title">
             <div className="ag-final-inner" data-reveal>
-              <h2 id="cta-final-title" className="ag-final-title">Pronto para transformar sua gestão?</h2>
+              <h2 id="cta-final-title" className="ag-final-title">Pronto para organizar sua operação?</h2>
               <p className="ag-final-sub">
-                Junte-se a centenas de produtores que já modernizaram sua fazenda.
+                Junte-se a centenas de equipes que já modernizaram seu fluxo de trabalho.
                 Comece grátis hoje.
               </p>
               <Link to="/signup" className="ag-final-btn">
@@ -965,11 +960,11 @@ export default function Landing() {
           <div className="ag-footer-inner">
             <div className="ag-footer-col">
               <div className="ag-logo on-dark">
-                <span className="ag-logo-mark" aria-hidden="true">🐄</span>
-                <span>AgroGestor</span>
+                <span className="ag-logo-mark" aria-hidden="true">📋</span>
+                <span>OpsKanban</span>
               </div>
               <p className="ag-footer-desc">
-                Gestão inteligente do rebanho para o produtor rural moderno.
+                Controle operacional e Kanban para equipes que precisam de clareza e velocidade.
               </p>
             </div>
 
@@ -988,14 +983,14 @@ export default function Landing() {
 
             <div className="ag-footer-col">
               <h4 className="ag-footer-title">Contato</h4>
-              <a href="mailto:contato@agrogestor.app" className="ag-footer-link">contato@agrogestor.app</a>
+              <a href="mailto:contato@opskanban.app" className="ag-footer-link">contato@opskanban.app</a>
               <a href="tel:+5511999990000" className="ag-footer-link">+55 (11) 99999-0000</a>
             </div>
           </div>
 
           <div className="ag-footer-bottom">
-            <span>© {new Date().getFullYear()} AgroGestor. Todos os direitos reservados.</span>
-            <span>Feito com <span aria-hidden="true">💚</span><span className="sr-only">amor</span> no Brasil</span>
+            <span>© {new Date().getFullYear()} OpsKanban. Todos os direitos reservados.</span>
+            <span>Feito com <span aria-hidden="true">💙</span><span className="sr-only">amor</span> no Brasil</span>
           </div>
         </footer>
       </div>
