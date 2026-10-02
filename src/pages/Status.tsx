@@ -14,19 +14,20 @@ export interface StatusOpcoes {
 }
 
 /* ============================================================
-   CSS
+   CSS — Paleta: Blue + Slate
    ============================================================ */
 const STYLES = `
 .st {
   --bg: #ffffff;
-  --bg-soft: #f6faf7;
-  --ink: #0b1a12;
-  --ink-soft: #3d5648;
-  --muted: #4f6a5b;
-  --line: #e6efe9;
-  --brand: #166534;
-  --brand-2: #22c55e;
-  --brand-3: #0f4a24;
+  --bg-soft: #f8fafc;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --brand: #2563eb;
+  --brand-2: #3b82f6;
+  --brand-3: #1d4ed8;
+  --brand-soft: #eff6ff;
 
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--ink);
@@ -58,7 +59,7 @@ const STYLES = `
 .st .st-btn-primary:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(22,101,52,.55);
+  box-shadow: 0 0 0 6px rgba(37,99,235,.55);
 }
 
 .st-page {
@@ -70,9 +71,9 @@ const STYLES = `
   justify-content: center;
   padding: 40px 20px;
   background:
-    radial-gradient(900px 500px at 80% -10%, rgba(34,197,94,.10), transparent 60%),
-    radial-gradient(700px 400px at -10% 100%, rgba(22,101,52,.07), transparent 55%),
-    linear-gradient(180deg, #f6faf7 0%, #ffffff 100%);
+    radial-gradient(900px 500px at 80% -10%, rgba(59,130,246,.10), transparent 60%),
+    radial-gradient(700px 400px at -10% 100%, rgba(37,99,235,.07), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
   position: relative;
   overflow: hidden;
 }
@@ -87,8 +88,8 @@ const STYLES = `
 .st-brand-mark {
   width: 34px; height: 34px; border-radius: 10px;
   display: grid; place-items: center; font-size: 18px;
-  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-  box-shadow: inset 0 0 0 1px rgba(22,101,52,.08);
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
 }
 
 .st-card {
@@ -100,8 +101,8 @@ const STYLES = `
   padding: 48px 40px 40px;
   text-align: center;
   box-shadow:
-    0 1px 2px rgba(11,26,18,.04),
-    0 30px 70px -30px rgba(11,26,18,.28);
+    0 1px 2px rgba(15,23,42,.04),
+    0 30px 70px -30px rgba(15,23,42,.28);
   position: relative;
   animation: stIn .45s cubic-bezier(.2,.7,.2,1);
 }
@@ -120,9 +121,9 @@ const STYLES = `
   position: relative;
 }
 .st-icon--sucesso {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  border: 1px solid #16a34a;
-  box-shadow: 0 16px 40px -18px rgba(22,101,52,.5);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: 1px solid #2563eb;
+  box-shadow: 0 16px 40px -18px rgba(37,99,235,.5);
 }
 .st-icon--erro {
   background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -130,9 +131,9 @@ const STYLES = `
   box-shadow: 0 16px 40px -18px rgba(185,28,28,.5);
 }
 .st-icon--info {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border: 1px solid #2563eb;
-  box-shadow: 0 16px 40px -18px rgba(30,64,175,.5);
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  border: 1px solid #3b82f6;
+  box-shadow: 0 16px 40px -18px rgba(59,130,246,.5);
 }
 .st-icon--carregando {
   background: var(--bg-soft);
@@ -142,7 +143,7 @@ const STYLES = `
 .st-spinner {
   width: 40px; height: 40px;
   border-radius: 50%;
-  border: 3px solid #d7ebe0;
+  border: 3px solid #dbeafe;
   border-top-color: var(--brand);
   animation: stSpin .8s linear infinite;
 }
@@ -188,14 +189,14 @@ const STYLES = `
   font-weight: 700;
   letter-spacing: -.01em;
   cursor: pointer;
-  box-shadow: 0 14px 30px -12px rgba(22,101,52,.6);
+  box-shadow: 0 14px 30px -12px rgba(37,99,235,.6);
   transition: transform .15s ease, box-shadow .2s ease, background .15s ease;
   font-family: inherit;
 }
 .st-btn-primary:hover {
   transform: translateY(-2px);
   background: var(--brand-3);
-  box-shadow: 0 20px 40px -16px rgba(22,101,52,.7);
+  box-shadow: 0 20px 40px -16px rgba(37,99,235,.7);
 }
 .st-btn-primary:active { transform: translateY(0); }
 
@@ -257,7 +258,7 @@ const STYLES = `
 }
 .st-footer-dot {
   width: 4px; height: 4px; border-radius: 50%;
-  background: #a7f3d0;
+  background: #bfdbfe;
 }
 
 @media (max-width: 560px) {
@@ -333,9 +334,9 @@ export function StatusView({
         <a href="#st-main" className="st-skip">Ir para o conteúdo</a>
 
         <div className="st-page">
-          <Link to="/" className="st-brand" aria-label="AgroGestor — início">
-            <span className="st-brand-mark" aria-hidden="true">🐄</span>
-            <span>AgroGestor</span>
+          <Link to="/" className="st-brand" aria-label="CtOperacional — início">
+            <span className="st-brand-mark" aria-hidden="true">📋</span>
+            <span>CtOperacional</span>
           </Link>
 
           <main className="st-card" id="st-main" {...liveProps}>
@@ -384,7 +385,7 @@ export function StatusView({
             )}
 
             <p className="st-footer">
-              <span>© {new Date().getFullYear()} AgroGestor</span>
+              <span>© {new Date().getFullYear()} CtOperacional</span>
               <span className="st-footer-dot" aria-hidden="true" />
               <span>Feito no Brasil 🇧🇷</span>
             </p>
@@ -404,7 +405,7 @@ export default function StatusPage() {
     <StatusView
       tipo="info"
       titulo="Central de status"
-      mensagem="Esta é a página genérica de status do AgroGestor. Se você chegou aqui por engano, volte para o início."
+      mensagem="Esta é a página genérica de status do CtOperacional. Se você chegou aqui por engano, volte para o início."
       ctaTexto="Voltar ao início"
       ctaLink="/"
     />

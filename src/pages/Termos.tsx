@@ -8,7 +8,7 @@ const SECOES: SecaoLegal[] = [
     conteudo: (
       <>
         <p>
-          Ao criar uma conta ou utilizar a plataforma <strong>AgroGestor</strong>,
+          Ao criar uma conta ou utilizar a plataforma <strong>CtOperacional</strong>,
           você declara que leu, entendeu e concorda integralmente com estes
           Termos de Uso e com a nossa Política de Privacidade.
         </p>
@@ -26,9 +26,10 @@ const SECOES: SecaoLegal[] = [
     conteudo: (
       <>
         <p>
-          O AgroGestor é uma plataforma web de gestão de rebanho que permite
-          cadastrar animais, acompanhar produção diária, gerar relatórios e
-          manter histórico de dados zootécnicos.
+          O CtOperacional é uma plataforma web de controle operacional e gestão
+          de tarefas no modelo Kanban, que permite criar quadros, organizar
+          colunas, mover cards, definir prioridades e acompanhar o fluxo de
+          trabalho da equipe em tempo real.
         </p>
         <p>
           O serviço é fornecido no modelo <em>Software as a Service (SaaS)</em>,
@@ -75,7 +76,7 @@ const SECOES: SecaoLegal[] = [
     titulo: 'Uso aceitável',
     conteudo: (
       <>
-        <p>Ao utilizar o AgroGestor, você concorda em <strong>não</strong>:</p>
+        <p>Ao utilizar o CtOperacional, você concorda em <strong>não</strong>:</p>
         <ul>
           <li>
             Empregar a plataforma para atividades ilícitas, fraudulentas ou que
@@ -112,12 +113,12 @@ const SECOES: SecaoLegal[] = [
         <p>
           Todo o conteúdo da plataforma — incluindo marca, layout, código-fonte,
           textos, ícones e funcionalidades — é de propriedade exclusiva do
-          AgroGestor e protegido pelas leis de propriedade intelectual.
+          CtOperacional e protegido pelas leis de propriedade intelectual.
         </p>
         <p>
-          Os <strong>dados inseridos por você</strong> (animais, produção,
-          relatórios) permanecem de sua propriedade. Você nos concede apenas
-          a licença necessária para operar o serviço.
+          Os <strong>dados inseridos por você</strong> (quadros, tarefas,
+          descrições, comentários e relatórios) permanecem de sua propriedade.
+          Você nos concede apenas a licença necessária para operar o serviço.
         </p>
       </>
     ),
@@ -128,7 +129,7 @@ const SECOES: SecaoLegal[] = [
     conteudo: (
       <>
         <p>
-          O AgroGestor oferece plano gratuito com limite de uso e planos pagos
+          O CtOperacional oferece plano gratuito com limite de uso e planos pagos
           com funcionalidades adicionais. Valores, ciclos de cobrança e limites
           são descritos na página de preços.
         </p>
@@ -160,7 +161,7 @@ const SECOES: SecaoLegal[] = [
           de configurações, sem burocracia ou multa.
         </p>
         <p>
-          Ao excluir sua conta, todos os dados de animais e registros vinculados
+          Ao excluir sua conta, todos os quadros, tarefas e registros vinculados
           serão permanentemente removidos de nossos servidores em até 30 dias,
           ressalvadas obrigações legais de retenção.
         </p>
@@ -173,12 +174,12 @@ const SECOES: SecaoLegal[] = [
     conteudo: (
       <>
         <p>
-          O AgroGestor é fornecido &quot;como está&quot;. Empregamos esforços
+          O CtOperacional é fornecido &quot;como está&quot;. Empregamos esforços
           razoáveis para manter a plataforma disponível e segura, mas não
           garantimos operação ininterrupta ou livre de erros.
         </p>
         <p>
-          Não nos responsabilizamos por decisões de manejo, perdas indiretas,
+          Não nos responsabilizamos por decisões operacionais, perdas indiretas,
           lucros cessantes ou danos decorrentes do uso ou da impossibilidade de
           uso do serviço.
         </p>
@@ -236,13 +237,13 @@ const SECOES: SecaoLegal[] = [
           <h3>Fale com a gente</h3>
           <p>
             <strong>E-mail:</strong>{' '}
-            <a href="mailto:juridico@agrogestor.app">juridico@agrogestor.app</a>
+            <a href="mailto:juridico@ctoperacional.app">juridico@ctoperacional.app</a>
             <br />
             <strong>Suporte:</strong>{' '}
-            <a href="mailto:contato@agrogestor.app">contato@agrogestor.app</a>
+            <a href="mailto:contato@ctoperacional.app">contato@ctoperacional.app</a>
             <br />
             <strong>Site:</strong>{' '}
-            <Link to="/">agrogestor.app</Link>
+            <Link to="/">ctoperacional.vercel.app</Link>
           </p>
         </div>
       </>
@@ -255,9 +256,9 @@ export default function Termos() {
     <LegalLayout
       tipo="termos"
       titulo="Termos de Uso"
-      subtitulo="As regras que regem o uso da plataforma AgroGestor. Escritas de forma clara, sem letras miúdas."
-      atualizadoEm="19 de setembro de 2026"
-      versao="2.0"
+      subtitulo="As regras que regem o uso da plataforma CtOperacional. Escritas de forma clara, sem letras miúdas."
+      atualizadoEm="1 de outubro de 2026"
+      versao="2.1"
       secoes={SECOES}
       voltarPara={{ rota: '/signup', texto: 'Voltar ao cadastro' }}
     />

@@ -21,20 +21,21 @@ const VALIDACOES = {
 };
 
 /* ============================================================
-   CSS do componente
+   CSS do componente — Paleta: Blue + Slate
    ============================================================ */
 const STYLES = `
 .sg {
   --bg: #ffffff;
-  --bg-soft: #f6faf7;
-  --ink: #0b1a12;
-  --ink-soft: #3d5648;
-  --muted: #4f6a5b;
-  --line: #e6efe9;
-  --line-strong: #c9d9cd;
-  --brand: #166534;
-  --brand-2: #22c55e;
-  --brand-3: #0f4a24;
+  --bg-soft: #f8fafc;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --brand: #2563eb;
+  --brand-2: #3b82f6;
+  --brand-3: #1d4ed8;
+  --brand-soft: #eff6ff;
   --danger-bg: #fef2f2;
   --danger-ink: #991b1b;
   --danger-line: #fecaca;
@@ -75,7 +76,7 @@ const STYLES = `
 .sg .sg-btn-primary:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(22,101,52,.55);
+  box-shadow: 0 0 0 6px rgba(37,99,235,.55);
 }
 
 /* ---------- Layout base ---------- */
@@ -90,7 +91,7 @@ const STYLES = `
 .sg-brand {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, var(--brand-3) 0%, var(--brand) 55%, #1a7a3e 100%);
+  background: linear-gradient(145deg, var(--brand-3) 0%, var(--brand) 55%, #3b82f6 100%);
   color: #fff;
   padding: 48px 56px;
   display: flex;
@@ -102,7 +103,7 @@ const STYLES = `
   content: "";
   position: absolute; inset: 0;
   background:
-    radial-gradient(700px 400px at 90% 10%, rgba(34,197,94,.28), transparent 60%),
+    radial-gradient(700px 400px at 90% 10%, rgba(59,130,246,.28), transparent 60%),
     radial-gradient(500px 300px at 10% 90%, rgba(255,255,255,.08), transparent 60%);
   pointer-events: none;
 }
@@ -128,15 +129,15 @@ const STYLES = `
   background: rgba(255,255,255,.12);
   border: 1px solid rgba(255,255,255,.18);
   font-size: 12px; font-weight: 600;
-  color: #ecfdf5;
+  color: #dbeafe;
   margin-bottom: 20px;
   width: fit-content;
   backdrop-filter: blur(6px);
 }
 .sg-brand-badge-dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74,222,128,.28);
+  background: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96,165,250,.28);
 }
 .sg-brand-title {
   font-size: clamp(28px, 3.4vw, 40px);
@@ -149,13 +150,13 @@ const STYLES = `
 }
 .sg-brand-title em {
   font-style: normal;
-  background: linear-gradient(120deg, #bbf7d0, #4ade80);
+  background: linear-gradient(120deg, #bfdbfe, #60a5fa);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .sg-brand-sub {
   font-size: 16px;
   line-height: 1.6;
-  color: #d1fae5;
+  color: #dbeafe;
   max-width: 440px;
   margin-bottom: 32px;
 }
@@ -165,29 +166,29 @@ const STYLES = `
 }
 .sg-brand-item {
   display: flex; align-items: center; gap: 12px;
-  font-size: 14.5px; color: #ecfdf5; font-weight: 500;
+  font-size: 14.5px; color: #dbeafe; font-weight: 500;
 }
 .sg-brand-check {
   width: 22px; height: 22px; border-radius: 50%;
   display: inline-grid; place-items: center;
-  background: rgba(74,222,128,.18);
-  border: 1px solid rgba(74,222,128,.35);
-  color: #bbf7d0;
+  background: rgba(96,165,250,.18);
+  border: 1px solid rgba(96,165,250,.35);
+  color: #bfdbfe;
   font-size: 11px; font-weight: 800;
   flex-shrink: 0;
 }
 .sg-brand-footer {
-  font-size: 12.5px; color: #a7f3d0;
+  font-size: 12.5px; color: #bfdbfe;
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-.sg-brand-footer-dot { width: 4px; height: 4px; border-radius: 50%; background: #4ade80; }
+.sg-brand-footer-dot { width: 4px; height: 4px; border-radius: 50%; background: #60a5fa; }
 
 /* ---------- Painel direito ---------- */
 .sg-form-side {
   display: flex; align-items: center; justify-content: center;
   padding: 48px 32px;
   background:
-    radial-gradient(600px 400px at 100% 0%, rgba(34,197,94,.06), transparent 60%),
+    radial-gradient(600px 400px at 100% 0%, rgba(59,130,246,.06), transparent 60%),
     var(--bg-soft);
   overflow-y: auto;
 }
@@ -199,8 +200,8 @@ const STYLES = `
   border-radius: 20px;
   padding: 40px 36px;
   box-shadow:
-    0 1px 2px rgba(11,26,18,.04),
-    0 20px 50px -25px rgba(11,26,18,.22);
+    0 1px 2px rgba(15,23,42,.04),
+    0 20px 50px -25px rgba(15,23,42,.22);
 }
 .sg-header { margin-bottom: 26px; }
 .sg-back {
@@ -283,12 +284,12 @@ const STYLES = `
   appearance: none;
 }
 
-.sg-input::placeholder { color: #9bafa3; }
-.sg-input:hover { border-color: #a9c1b0; }
+.sg-input::placeholder { color: #94a3b8; }
+.sg-input:hover { border-color: #94a3b8; }
 .sg-input:focus {
   outline: none;
   border-color: var(--brand);
-  box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+  box-shadow: 0 0 0 4px rgba(59,130,246,.15);
 }
 .sg-input.is-error { border-color: #dc2626; }
 .sg-input.is-error:focus { box-shadow: 0 0 0 4px rgba(220,38,38,.15); }
@@ -312,7 +313,7 @@ const STYLES = `
   transition: background .15s, color .15s, transform .1s;
 }
 .sg-input-icon:hover {
-  background: var(--bg-soft);
+  background: var(--brand-soft);
   color: var(--brand);
 }
 .sg-input-icon:active {
@@ -349,7 +350,7 @@ const STYLES = `
 .sg-strength-bar {
   flex: 1;
   height: 5px;
-  background: #e6efe9;
+  background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
 }
@@ -385,14 +386,14 @@ const STYLES = `
 .sg-req-dot {
   width: 14px; height: 14px; border-radius: 50%;
   display: inline-grid; place-items: center;
-  background: #eef4ee;
-  color: #809988;
+  background: #f1f5f9;
+  color: #94a3b8;
   font-size: 9px; font-weight: 800;
   flex-shrink: 0;
   transition: background .15s, color .15s;
 }
 .sg-req.is-ok .sg-req-dot {
-  background: #dcfce7;
+  background: #dbeafe;
   color: var(--brand);
 }
 
@@ -406,11 +407,11 @@ const STYLES = `
   border-radius: 12px;
   cursor: pointer;
   transition: border-color .15s, background .15s;
-  background: #fbfdfb;
+  background: #fbfcfe;
   position: relative;
 }
 .sg-termos:hover { border-color: var(--line-strong); background: #fff; }
-.sg-termos.is-checked { border-color: var(--brand); background: #f0fdf4; }
+.sg-termos.is-checked { border-color: var(--brand); background: var(--brand-soft); }
 .sg-termos input[type="checkbox"] {
   position: absolute;
   opacity: 0;
@@ -455,14 +456,14 @@ const STYLES = `
   letter-spacing: -.01em;
   cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 12px 26px -12px rgba(22,101,52,.6);
+  box-shadow: 0 12px 26px -12px rgba(37,99,235,.6);
   transition: transform .15s ease, box-shadow .2s ease, background .15s ease;
   text-align: center;
 }
 .sg-btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
   background: var(--brand-3);
-  box-shadow: 0 16px 32px -14px rgba(22,101,52,.7);
+  box-shadow: 0 16px 32px -14px rgba(37,99,235,.7);
 }
 .sg-btn-primary:active:not(:disabled) { transform: translateY(0); }
 .sg-btn-primary:disabled {
@@ -508,9 +509,9 @@ const STYLES = `
   border-radius: 50%;
   display: grid; place-items: center;
   font-size: 36px;
-  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-  border: 1px solid #bbf7d0;
-  box-shadow: 0 12px 30px -14px rgba(22,101,52,.4);
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 12px 30px -14px rgba(37,99,235,.4);
 }
 .sg-success-title {
   font-size: 24px;
@@ -558,7 +559,7 @@ const STYLES = `
   .sg-card {
     padding: 28px 22px;
     border-radius: 16px;
-    box-shadow: 0 10px 30px -18px rgba(11,26,18,.22);
+    box-shadow: 0 10px 30px -18px rgba(15,23,42,.22);
   }
   .sg-title { font-size: 22px; }
   .sg-sub { font-size: 14px; }
@@ -643,8 +644,8 @@ export default function Signup() {
       { label: 'Muito fraca', cor: '#b91c1c' },
       { label: 'Fraca',       cor: '#c2410c' },
       { label: 'Média',       cor: '#a16207' },
-      { label: 'Boa',         cor: '#15803d' },
-      { label: 'Forte',       cor: '#166534' },
+      { label: 'Boa',         cor: '#0ea5e9' },
+      { label: 'Forte',       cor: '#2563eb' },
     ];
     return map[forca];
   }, [forca]);
@@ -711,11 +712,11 @@ export default function Signup() {
 
         <div className="sg-wrap">
           {/* ============ PAINEL ESQUERDO — BRANDING ============ */}
-          <aside className="sg-brand" aria-label="Sobre o AgroGestor">
+          <aside className="sg-brand" aria-label="Sobre o CtOperacional">
             <div className="sg-brand-top">
-              <Link to="/" className="sg-brand-logo" aria-label="AgroGestor — início">
-                <span className="sg-brand-logo-mark" aria-hidden="true">🐄</span>
-                <span>AgroGestor</span>
+              <Link to="/" className="sg-brand-logo" aria-label="CtOperacional — início">
+                <span className="sg-brand-logo-mark" aria-hidden="true">📋</span>
+                <span>CtOperacional</span>
               </Link>
 
               <span className="sg-brand-badge">
@@ -724,11 +725,11 @@ export default function Signup() {
               </span>
 
               <h2 className="sg-brand-title">
-                Comece a gerenciar o <em>seu rebanho</em> hoje.
+                Comece a organizar <em>sua operação</em> hoje.
               </h2>
               <p className="sg-brand-sub">
                 Crie sua conta em menos de 1 minuto e tenha controle total sobre
-                produção, categorias e relatórios.
+                tarefas, quadros e o fluxo de trabalho da sua equipe.
               </p>
 
               <ul className="sg-brand-list">
@@ -747,7 +748,7 @@ export default function Signup() {
             </div>
 
             <div className="sg-brand-footer">
-              <span>© {new Date().getFullYear()} AgroGestor</span>
+              <span>© {new Date().getFullYear()} CtOperacional</span>
               <span className="sg-brand-footer-dot" aria-hidden="true" />
               <span>Feito no Brasil 🇧🇷</span>
             </div>

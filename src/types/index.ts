@@ -1,5 +1,7 @@
+// src/types/index.ts
+
 // ============================================================
-// Tipos da API
+// Tipos da API (alinhados com o Swagger)
 // ============================================================
 
 export interface Usuario {
@@ -16,6 +18,8 @@ export interface LoginDTO {
 }
 
 export interface LoginRespostaDTO {
+  sucesso?: boolean;
+  mensagem?: string;
   token: string;
   tipo?: string;
   usuario?: Usuario;
@@ -36,29 +40,51 @@ export interface MensagemRespostaDTO {
   mensagem: string;
 }
 
-export interface Nome {
+// Cliente (endpoint /clientes do Swagger — usado apenas para testes)
+export interface Cliente {
   id?: string | number;
   nome: string;
 }
 
-export interface NomeRequestDTO {
+export interface ClienteRequestDTO {
   nome: string;
-}
-
-// ============================================================
-// Tipos da aplicação
-// ============================================================
-
-export interface Animal {
-  id?: string | number;
-  brinco: string;
-  nome: string;
-  categoria: 'Bezerra' | 'Novilha' | 'Vaca em Lactação' | 'Vaca Seca';
-  producaoDiaria: number;
 }
 
 export interface ApiError {
   status: number;
   mensagem: string;
   detalhes?: unknown;
+}
+
+// ============================================================
+// Tipos da aplicação — CtOperacional (Kanban)
+// ============================================================
+
+export type StatusColuna = 'a_fazer' | 'em_progresso' | 'revisao' | 'concluido';
+
+export type Prioridade = 'baixa' | 'media' | 'alta';
+
+export type Tema = 'claro' | 'escuro';
+
+export type Aba = 'quadro' | 'lista' | 'relatorios' | 'config';
+
+export interface Tarefa {
+  id: string;
+  titulo: string;
+  descricao?: string;
+  prioridade: Prioridade;
+  status: StatusColuna;
+  criadoEm: string;
+}
+
+export interface Coluna {
+  id: StatusColuna;
+  titulo: string;
+  icon: string;
+}
+
+export interface Toast {
+  id: string;
+  texto: string;
+  tipo: 'sucesso' | 'erro' | 'info';
 }

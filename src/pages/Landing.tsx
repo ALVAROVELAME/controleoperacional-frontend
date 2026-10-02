@@ -631,9 +631,9 @@ export default function Landing() {
         {/* ===================== NAVBAR ===================== */}
         <header className={`ag-nav${scrolled ? ' is-scrolled' : ''}`} role="banner">
           <div className="ag-nav-inner">
-            <Link to="/" className="ag-logo" onClick={() => setMenuAberto(false)} aria-label="OpsKanban — início">
+            <Link to="/" className="ag-logo" onClick={() => setMenuAberto(false)} aria-label="CtOperacional — início">
               <span className="ag-logo-mark" aria-hidden="true">📋</span>
-              <span>OpsKanban</span>
+              <span>CtOperacional</span>
             </Link>
 
             <nav className="ag-nav-links" aria-label="Principal">
@@ -720,7 +720,7 @@ export default function Landing() {
                     <span className="ag-dot" style={{ background: '#ff5f56' }} />
                     <span className="ag-dot" style={{ background: '#ffbd2e' }} />
                     <span className="ag-dot" style={{ background: '#27c93f' }} />
-                    <span className="ag-mock-url">opskanban.app/dashboard</span>
+                    <span className="ag-mock-url">ctoperacional.vercel.app/dashboard</span>
                   </div>
 
                   <div className="ag-mock-body">
@@ -828,7 +828,7 @@ export default function Landing() {
                 <span className="ag-eyebrow">Depoimentos</span>
                 <h2 id="depoimentos-title" className="ag-title">Quem usa, recomenda</h2>
                 <p className="ag-subtitle">
-                  Equipes de todo o Brasil já organizaram sua operação com o OpsKanban.
+                  Equipes de todo o Brasil já organizaram sua operação com o CtOperacional.
                 </p>
               </header>
 
@@ -927,7 +927,7 @@ export default function Landing() {
 
               <div className="ag-faq" data-reveal>
                 {[
-                  { q: 'Preciso instalar algo?', a: 'Não! O OpsKanban é 100% web. Basta acessar pelo navegador do computador, tablet ou celular.' },
+                  { q: 'Preciso instalar algo?', a: 'Não! O CtOperacional é 100% web. Basta acessar pelo navegador do computador, tablet ou celular.' },
                   { q: 'Meus dados ficam seguros?', a: 'Sim. Todos os dados são salvos automaticamente e você pode exportar um backup em JSON quando quiser.' },
                   { q: 'Posso usar de graça para sempre?', a: 'Sim! O plano Grátis permite até 3 quadros e 100 tarefas sem custo e sem prazo de expiração.' },
                   { q: 'Funciona offline?', a: 'A plataforma precisa de internet para sincronizar. Mas os dados ficam em cache local para consulta rápida.' },
@@ -961,7 +961,7 @@ export default function Landing() {
             <div className="ag-footer-col">
               <div className="ag-logo on-dark">
                 <span className="ag-logo-mark" aria-hidden="true">📋</span>
-                <span>OpsKanban</span>
+                <span>CtOperacional</span>
               </div>
               <p className="ag-footer-desc">
                 Controle operacional e Kanban para equipes que precisam de clareza e velocidade.
@@ -983,13 +983,13 @@ export default function Landing() {
 
             <div className="ag-footer-col">
               <h4 className="ag-footer-title">Contato</h4>
-              <a href="mailto:contato@opskanban.app" className="ag-footer-link">contato@opskanban.app</a>
+              <a href="mailto:contato@ctoperacional.app" className="ag-footer-link">contato@ctoperacional.app</a>
               <a href="tel:+5511999990000" className="ag-footer-link">+55 (11) 99999-0000</a>
             </div>
           </div>
 
           <div className="ag-footer-bottom">
-            <span>© {new Date().getFullYear()} OpsKanban. Todos os direitos reservados.</span>
+            <span>© {new Date().getFullYear()} CtOperacional. Todos os direitos reservados.</span>
             <span>Feito com <span aria-hidden="true">💙</span><span className="sr-only">amor</span> no Brasil</span>
           </div>
         </footer>

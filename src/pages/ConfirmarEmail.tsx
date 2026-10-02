@@ -1,3 +1,4 @@
+// src/pages/ConfirmarEmail.tsx
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
@@ -69,7 +70,7 @@ export default function ConfirmarEmail() {
           tipo: 'sucesso',
           titulo: 'E-mail confirmado!',
           mensagem:
-            'Sua conta está ativa. Agora você já pode fazer login e começar a usar o AgroGestor.',
+            'Sua conta está ativa. Agora você já pode fazer login e começar a usar o CtOperacional.',
           ctaTexto: 'Ir para o login',
           ctaLink: '/login',
           autoRedirect: 8,

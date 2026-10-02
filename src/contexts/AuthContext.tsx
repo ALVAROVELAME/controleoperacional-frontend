@@ -1,3 +1,4 @@
+// src/contexts/AuthContext.tsx
 import {
   createContext,
   useContext,
@@ -27,25 +28,70 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Valida o token ao montar o app
   useEffect(() => {
+    let ativo = true;
+
     const validar = async () => {
       const token = authService.getToken();
       if (!token) {
-        setUsuario(null);
-        setCarregando(false);
+        if (ativo) {
+          setUsuario(null);
+          setCarregando(false);
+        }
         return;
       }
+
       try {
         const dados = await authService.me();
-        setUsuario(dados);
-        localStorage.setItem('usuario', JSON.stringify(dados));
-      } catch {
-        authService.logout();
-        setUsuario(null);
+        if (ativo) {
+          setUsuario(dados);
+          localStorage.setItem('usuario', JSON.stringify(dados));
+        }
+      } catch (err: unknown) {
+        if (!ativo) return;
+
+        const status = (err as { response?: { status?: number } })
+          ?.response?.status;
+
+        // Só desloga em caso de problema de autenticação (401/403)
+        // Em erros de rede/servidor mantém o usuário em cache (sessão otimista)
+        if (status === 401 || status === 403) {
+          authService.logout();
+          setUsuario(null);
+        }
       } finally {
-        setCarregando(false);
+        if (ativo) setCarregando(false);
       }
     };
+
     validar();
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  // Sincroniza logout entre abas (evento `storage`)
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      // Se o token foi removido em outra aba, desloga aqui também
+      if (e.key === 'token' && !e.newValue) {
+        setUsuario(null);
+      }
+      // Se o usuário foi removido em outra aba, desloga aqui também
+      if (e.key === 'usuario' && !e.newValue) {
+        setUsuario(null);
+      }
+      // Se o usuário foi atualizado em outra aba, sincroniza
+      if (e.key === 'usuario' && e.newValue) {
+        try {
+          setUsuario(JSON.parse(e.newValue) as Usuario);
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   const login = useCallback((user: Usuario, token: string) => {
