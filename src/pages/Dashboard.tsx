@@ -10,8 +10,8 @@ import LogoutButton from '../components/LogoutButton';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/auth.service';
 
-const STORAGE_KEY = 'opskanban:tarefas';
-const THEME_KEY = 'opskanban:tema';
+const STORAGE_KEY = 'ctoperacional:tarefas';
+const THEME_KEY = 'ctoperacional:tema';
 
 type Aba = 'quadro' | 'lista' | 'relatorios' | 'config';
 type Tema = 'claro' | 'escuro';
@@ -912,7 +912,7 @@ export default function Dashboard() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `opskanban-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `ctoperacional-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     push('Backup exportado', 'sucesso');
@@ -1073,7 +1073,7 @@ export default function Dashboard() {
           <div className="dash-brand">
             <span className="dash-brand-mark" aria-hidden="true">📋</span>
             <div className="dash-brand-text">
-              <span className="dash-brand-name">OpsKanban</span>
+              <span className="dash-brand-name">CtOperacional</span>
               <span className="dash-brand-sub">Controle Operacional</span>
             </div>
           </div>
@@ -1407,7 +1407,7 @@ export default function Dashboard() {
               <div className="dash-brand">
                 <span className="dash-brand-mark" aria-hidden="true">📋</span>
                 <div className="dash-brand-text">
-                  <span className="dash-brand-name">OpsKanban</span>
+                  <span className="dash-brand-name">CtOperacional</span>
                   <span className="dash-brand-sub">Controle Operacional</span>
                 </div>
               </div>

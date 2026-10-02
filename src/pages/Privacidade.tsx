@@ -8,7 +8,7 @@ const SECOES: SecaoLegal[] = [
     conteudo: (
       <>
         <p>
-          Sua privacidade é levada a sério no <strong>AgroGestor</strong>. Esta
+          Sua privacidade é levada a sério no <strong>CtOperacional</strong>. Esta
           Política explica, de forma clara, quais dados coletamos, por que
           coletamos e como você pode exercer seus direitos.
         </p>
@@ -30,8 +30,8 @@ const SECOES: SecaoLegal[] = [
             <strong>Cadastro:</strong> nome, e-mail e senha (armazenada em hash).
           </li>
           <li>
-            <strong>Operacionais:</strong> dados de animais, brincos, produção
-            diária, categorias e relatórios que você insere na plataforma.
+            <strong>Operacionais:</strong> tarefas, quadros, colunas, prioridades,
+            descrições e demais informações que você insere na plataforma.
           </li>
           <li>
             <strong>Comunicações:</strong> mensagens enviadas ao suporte.
@@ -73,9 +73,9 @@ const SECOES: SecaoLegal[] = [
         <div className="legal-callout">
           <span className="legal-callout-icon" aria-hidden="true">✓</span>
           <p>
-            <strong>Nós não vendemos seus dados.</strong> Seus dados zootécnicos
-            nunca são comercializados ou compartilhados com terceiros para fins
-            publicitários.
+            <strong>Nós não vendemos seus dados.</strong> Suas tarefas e o
+            conteúdo dos seus quadros nunca são comercializados ou compartilhados
+            com terceiros para fins publicitários.
           </p>
         </div>
       </>
@@ -276,13 +276,13 @@ const SECOES: SecaoLegal[] = [
           <h3>Fale com o DPO</h3>
           <p>
             <strong>E-mail:</strong>{' '}
-            <a href="mailto:dpo@agrogestor.app">dpo@agrogestor.app</a>
+            <a href="mailto:dpo@ctoperacional.app">dpo@ctoperacional.app</a>
             <br />
             <strong>Assunto sugerido:</strong> &quot;LGPD — [seu pedido]&quot;
             <br />
             <strong>Prazo de resposta:</strong> até 15 dias corridos
             <br />
-            <strong>Site:</strong> <Link to="/">agrogestor.app</Link>
+            <strong>Site:</strong> <Link to="/">ctoperacional.vercel.app</Link>
           </p>
         </div>
       </>
@@ -296,8 +296,8 @@ export default function Privacidade() {
       tipo="privacidade"
       titulo="Política de Privacidade"
       subtitulo="Transparência total sobre como coletamos, usamos e protegemos seus dados. Em conformidade com a LGPD."
-      atualizadoEm="19 de setembro de 2026"
-      versao="2.0"
+      atualizadoEm="1 de outubro de 2026"
+      versao="2.1"
       secoes={SECOES}
       voltarPara={{ rota: '/signup', texto: 'Voltar ao cadastro' }}
     />

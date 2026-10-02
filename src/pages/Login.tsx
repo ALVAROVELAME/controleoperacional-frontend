@@ -1,3 +1,4 @@
+// src/pages/Login.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { api } from '../services/api';
@@ -16,20 +17,21 @@ interface LoginResposta {
 }
 
 /* ============================================================
-   CSS do componente
+   CSS do componente — Paleta: Blue + Slate
    ============================================================ */
 const STYLES = `
 .lg {
   --bg: #ffffff;
-  --bg-soft: #f6faf7;
-  --ink: #0b1a12;
-  --ink-soft: #3d5648;
-  --muted: #4f6a5b;
-  --line: #e6efe9;
-  --line-strong: #c9d9cd;
-  --brand: #166534;
-  --brand-2: #22c55e;
-  --brand-3: #0f4a24;
+  --bg-soft: #f8fafc;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --brand: #2563eb;
+  --brand-2: #3b82f6;
+  --brand-3: #1d4ed8;
+  --brand-soft: #eff6ff;
   --danger-bg: #fef2f2;
   --danger-ink: #991b1b;
   --danger-line: #fecaca;
@@ -69,7 +71,7 @@ const STYLES = `
 .lg-btn-primary:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(22,101,52,.55);
+  box-shadow: 0 0 0 6px rgba(37,99,235,.55);
 }
 
 /* ---------- Layout base ---------- */
@@ -84,7 +86,7 @@ const STYLES = `
 .lg-brand {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, var(--brand-3) 0%, var(--brand) 55%, #1a7a3e 100%);
+  background: linear-gradient(145deg, var(--brand-3) 0%, var(--brand) 55%, #3b82f6 100%);
   color: #fff;
   padding: 48px 56px;
   display: flex;
@@ -96,7 +98,7 @@ const STYLES = `
   content: "";
   position: absolute; inset: 0;
   background:
-    radial-gradient(700px 400px at 90% 10%, rgba(34,197,94,.28), transparent 60%),
+    radial-gradient(700px 400px at 90% 10%, rgba(59,130,246,.28), transparent 60%),
     radial-gradient(500px 300px at 10% 90%, rgba(255,255,255,.08), transparent 60%);
   pointer-events: none;
 }
@@ -122,15 +124,15 @@ const STYLES = `
   background: rgba(255,255,255,.12);
   border: 1px solid rgba(255,255,255,.18);
   font-size: 12px; font-weight: 600;
-  color: #ecfdf5;
+  color: #dbeafe;
   margin-bottom: 20px;
   width: fit-content;
   backdrop-filter: blur(6px);
 }
 .lg-brand-badge-dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74,222,128,.28);
+  background: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96,165,250,.28);
 }
 .lg-brand-title {
   font-size: clamp(28px, 3.4vw, 40px);
@@ -143,13 +145,13 @@ const STYLES = `
 }
 .lg-brand-title em {
   font-style: normal;
-  background: linear-gradient(120deg, #bbf7d0, #4ade80);
+  background: linear-gradient(120deg, #bfdbfe, #60a5fa);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .lg-brand-sub {
   font-size: 16px;
   line-height: 1.6;
-  color: #d1fae5;
+  color: #dbeafe;
   max-width: 440px;
   margin-bottom: 32px;
 }
@@ -159,29 +161,29 @@ const STYLES = `
 }
 .lg-brand-item {
   display: flex; align-items: center; gap: 12px;
-  font-size: 14.5px; color: #ecfdf5; font-weight: 500;
+  font-size: 14.5px; color: #dbeafe; font-weight: 500;
 }
 .lg-brand-check {
   width: 22px; height: 22px; border-radius: 50%;
   display: inline-grid; place-items: center;
-  background: rgba(74,222,128,.18);
-  border: 1px solid rgba(74,222,128,.35);
-  color: #bbf7d0;
+  background: rgba(96,165,250,.18);
+  border: 1px solid rgba(96,165,250,.35);
+  color: #bfdbfe;
   font-size: 11px; font-weight: 800;
   flex-shrink: 0;
 }
 .lg-brand-footer {
-  font-size: 12.5px; color: #a7f3d0;
+  font-size: 12.5px; color: #bfdbfe;
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-.lg-brand-footer-dot { width: 4px; height: 4px; border-radius: 50%; background: #4ade80; }
+.lg-brand-footer-dot { width: 4px; height: 4px; border-radius: 50%; background: #60a5fa; }
 
 /* ---------- Painel direito (formulário) ---------- */
 .lg-form-side {
   display: flex; align-items: center; justify-content: center;
   padding: 48px 32px;
   background:
-    radial-gradient(600px 400px at 100% 0%, rgba(34,197,94,.06), transparent 60%),
+    radial-gradient(600px 400px at 100% 0%, rgba(59,130,246,.06), transparent 60%),
     var(--bg-soft);
 }
 .lg-card {
@@ -192,8 +194,8 @@ const STYLES = `
   border-radius: 20px;
   padding: 40px 36px;
   box-shadow:
-    0 1px 2px rgba(11,26,18,.04),
-    0 20px 50px -25px rgba(11,26,18,.22);
+    0 1px 2px rgba(15,23,42,.04),
+    0 20px 50px -25px rgba(15,23,42,.22);
 }
 .lg-title {
   font-size: 26px;
@@ -279,12 +281,12 @@ const STYLES = `
   appearance: none;
 }
 
-.lg-input::placeholder { color: #9bafa3; }
-.lg-input:hover { border-color: #a9c1b0; }
+.lg-input::placeholder { color: #94a3b8; }
+.lg-input:hover { border-color: #94a3b8; }
 .lg-input:focus {
   outline: none;
   border-color: var(--brand);
-  box-shadow: 0 0 0 4px rgba(34,197,94,.15);
+  box-shadow: 0 0 0 4px rgba(59,130,246,.15);
 }
 .lg-input.has-error { border-color: #dc2626; }
 .lg-input.has-error:focus { box-shadow: 0 0 0 4px rgba(220,38,38,.15); }
@@ -308,7 +310,7 @@ const STYLES = `
   transition: background .15s, color .15s, transform .1s;
 }
 .lg-input-icon:hover {
-  background: var(--bg-soft);
+  background: var(--brand-soft);
   color: var(--brand);
 }
 .lg-input-icon:active {
@@ -334,13 +336,13 @@ const STYLES = `
   letter-spacing: -.01em;
   cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 12px 26px -12px rgba(22,101,52,.6);
+  box-shadow: 0 12px 26px -12px rgba(37,99,235,.6);
   transition: transform .15s ease, box-shadow .2s ease, background .15s ease;
 }
 .lg-btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
   background: var(--brand-3);
-  box-shadow: 0 16px 32px -14px rgba(22,101,52,.7);
+  box-shadow: 0 16px 32px -14px rgba(37,99,235,.7);
 }
 .lg-btn-primary:active:not(:disabled) { transform: translateY(0); }
 .lg-btn-primary:disabled {
@@ -416,7 +418,7 @@ const STYLES = `
   .lg-card {
     padding: 28px 22px;
     border-radius: 16px;
-    box-shadow: 0 10px 30px -18px rgba(11,26,18,.22);
+    box-shadow: 0 10px 30px -18px rgba(15,23,42,.22);
   }
   .lg-title { font-size: 22px; }
   .lg-sub { font-size: 14px; margin-bottom: 22px; }
@@ -480,31 +482,31 @@ export default function Login() {
 
         <div className="lg-wrap">
           {/* ============ PAINEL ESQUERDO — BRANDING ============ */}
-          <aside className="lg-brand" aria-label="Sobre o AgroGestor">
+          <aside className="lg-brand" aria-label="Sobre o CtOperacional">
             <div className="lg-brand-top">
-              <Link to="/" className="lg-brand-logo" aria-label="AgroGestor — início">
-                <span className="lg-brand-logo-mark" aria-hidden="true">🐄</span>
-                <span>AgroGestor</span>
+              <Link to="/" className="lg-brand-logo" aria-label="CtOperacional — início">
+                <span className="lg-brand-logo-mark" aria-hidden="true">📋</span>
+                <span>CtOperacional</span>
               </Link>
 
               <span className="lg-brand-badge">
                 <span className="lg-brand-badge-dot" aria-hidden="true" />
-                Plataforma 2.0
+                Sistema Operacional
               </span>
 
               <h2 className="lg-brand-title">
-                Gestão inteligente do <em>seu rebanho</em>.
+                Controle operacional <em>simples e visual</em>.
               </h2>
               <p className="lg-brand-sub">
-                Controle produção, categorias e relatórios em um só lugar.
-                Simples como deve ser.
+                Organize tarefas, acompanhe o fluxo de trabalho e mantenha sua equipe
+                alinhada em um só lugar.
               </p>
 
               <ul className="lg-brand-list">
                 {[
-                  'Dashboard em tempo real',
-                  'Backup automático na nuvem',
-                  'Relatórios prontos em um clique',
+                  'Quadro Kanban em tempo real',
+                  'Histórico e backup na nuvem',
+                  'Atalhos e busca rápida (Ctrl+K)',
                 ].map((item) => (
                   <li key={item} className="lg-brand-item">
                     <span className="lg-brand-check" aria-hidden="true">✓</span>
@@ -515,7 +517,7 @@ export default function Login() {
             </div>
 
             <div className="lg-brand-footer">
-              <span>© {new Date().getFullYear()} AgroGestor</span>
+              <span>© {new Date().getFullYear()} CtOperacional</span>
               <span className="lg-brand-footer-dot" aria-hidden="true" />
               <span>Feito no Brasil 🇧🇷</span>
             </div>

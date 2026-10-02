@@ -1,3 +1,4 @@
+// src/components/LegalLayout.tsx
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -18,23 +19,23 @@ export interface LegalLayoutProps {
 }
 
 /* ============================================================
-   CSS
+   CSS — Paleta: Blue + Slate
    ============================================================ */
 const STYLES = `
 .legal {
   --bg: #ffffff;
-  --bg-soft: #f6faf7;
-  --ink: #0a1810;
-  --ink-soft: #2a4033;
-  --muted: #3f5a48;
-  --line: #e3ebe6;
-  --line-strong: #c9d9cd;
-  --brand: #14532d;
-  --brand-2: #22c55e;
-  --brand-3: #0f4a24;
-  --brand-soft: #e8f5ec;
-  --shadow-sm: 0 1px 2px rgba(11,26,18,.04);
-  --shadow-md: 0 20px 50px -25px rgba(11,26,18,.18);
+  --bg-soft: #f8fafc;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --brand: #2563eb;
+  --brand-2: #3b82f6;
+  --brand-3: #1d4ed8;
+  --brand-soft: #eff6ff;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+  --shadow-md: 0 20px 50px -25px rgba(15,23,42,.18);
 
   min-height: 100vh;
   min-height: 100dvh;
@@ -90,7 +91,7 @@ const STYLES = `
   background: linear-gradient(90deg, var(--brand-2), var(--brand));
   width: 0%;
   transition: width .12s linear;
-  box-shadow: 0 0 8px rgba(34,197,94,.4);
+  box-shadow: 0 0 8px rgba(59,130,246,.4);
 }
 
 /* ---------- Header ---------- */
@@ -120,8 +121,8 @@ const STYLES = `
 .legal-logo-mark {
   width: 34px; height: 34px; border-radius: 10px;
   display: grid; place-items: center; font-size: 18px;
-  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-  box-shadow: inset 0 0 0 1px rgba(20,83,45,.08);
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  box-shadow: inset 0 0 0 1px rgba(37,99,235,.08);
 }
 .legal-back {
   display: inline-flex;
@@ -147,8 +148,8 @@ const STYLES = `
 .legal-hero {
   padding: 56px 24px 40px;
   background:
-    radial-gradient(800px 400px at 80% -20%, rgba(34,197,94,.10), transparent 60%),
-    linear-gradient(180deg, #f6faf7 0%, #ffffff 100%);
+    radial-gradient(800px 400px at 80% -20%, rgba(59,130,246,.10), transparent 60%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
   border-bottom: 1px solid var(--line);
 }
 .legal-hero-inner {
@@ -171,7 +172,7 @@ const STYLES = `
   font-weight: 600;
   background: var(--brand-soft);
   color: var(--brand);
-  border: 1px solid rgba(20,83,45,.12);
+  border: 1px solid rgba(37,99,235,.12);
 }
 .legal-badge--neutral {
   background: #fff;
@@ -353,7 +354,7 @@ const STYLES = `
   align-items: flex-start;
   padding: 16px 18px;
   background: var(--brand-soft);
-  border: 1px solid rgba(20,83,45,.14);
+  border: 1px solid rgba(37,99,235,.14);
   border-left: 4px solid var(--brand);
   border-radius: 12px;
   margin: 16px 0;
@@ -393,8 +394,8 @@ const STYLES = `
 
 /* ---------- Footer ---------- */
 .legal-footer {
-  background: #0a1710;
-  color: #d7e3da;
+  background: #0b0f1a;
+  color: #cbd5e1;
   padding: 40px 24px 28px;
 }
 .legal-footer-inner {
@@ -407,7 +408,7 @@ const STYLES = `
   flex-wrap: wrap;
   font-size: 13px;
 }
-.legal-footer a { color: #a7f3d0; text-decoration: none; }
+.legal-footer a { color: #93c5fd; text-decoration: none; }
 .legal-footer a:hover { color: #fff; text-decoration: underline; }
 .legal-footer-links {
   display: flex;
@@ -430,7 +431,7 @@ const STYLES = `
   display: grid;
   place-items: center;
   font-size: 18px;
-  box-shadow: 0 14px 30px -10px rgba(20,83,45,.5);
+  box-shadow: 0 14px 30px -10px rgba(37,99,235,.5);
   z-index: 60;
   opacity: 0;
   pointer-events: none;
@@ -446,7 +447,7 @@ const STYLES = `
 .legal-top:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(34,197,94,.55);
+  box-shadow: 0 0 0 6px rgba(59,130,246,.55);
 }
 
 /* ---------- Responsivo ---------- */
@@ -577,9 +578,9 @@ export default function LegalLayout({
         {/* ---------- Header ---------- */}
         <header className="legal-header">
           <div className="legal-header-inner">
-            <Link to="/" className="legal-logo" aria-label="AgroGestor — início">
-              <span className="legal-logo-mark" aria-hidden="true">🐄</span>
-              <span>AgroGestor</span>
+            <Link to="/" className="legal-logo" aria-label="CtOperacional — início">
+              <span className="legal-logo-mark" aria-hidden="true">📋</span>
+              <span>CtOperacional</span>
             </Link>
             <Link to={voltarPara.rota} className="legal-back">
               <span aria-hidden="true">←</span>
@@ -660,7 +661,7 @@ export default function LegalLayout({
         <footer className="legal-footer">
           <div className="legal-footer-inner">
             <span>
-              © {new Date().getFullYear()} AgroGestor · Documento do tipo{' '}
+              © {new Date().getFullYear()} CtOperacional · Documento do tipo{' '}
               <strong style={{ color: '#fff', fontWeight: 700 }}>
                 {tipo === 'termos' ? 'Termos de Uso' : 'Política de Privacidade'}
               </strong>
@@ -668,7 +669,7 @@ export default function LegalLayout({
             <nav className="legal-footer-links" aria-label="Documentos legais">
               <Link to="/termos">Termos de Uso</Link>
               <Link to="/privacidade">Política de Privacidade</Link>
-              <a href="mailto:contato@agrogestor.app">Contato</a>
+              <a href="mailto:contato@ctoperacional.app">Contato</a>
             </nav>
           </div>
         </footer>
