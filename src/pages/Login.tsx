@@ -439,9 +439,10 @@ export default function Login() {
   const location = useLocation();
   const { login } = useAuth();
 
-  // Limpa erro quando o usuário digita
+  // Limpa o erro a cada mudança nos campos (sem depender de `erro` para
+  // não disparar re-render desnecessário nem quebrar o exhaustive-deps)
   useEffect(() => {
-    if (erro) setErro(null);
+    setErro(null);
   }, [email, senha]);
 
   const handleLogin = async (e: React.FormEvent) => {

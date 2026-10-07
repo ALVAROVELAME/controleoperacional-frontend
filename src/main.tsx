@@ -3,11 +3,25 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Aplica o tema salvo no <html data-theme="dark|light">
-const temaSalvo = localStorage.getItem('opskanban:tema');
-if (temaSalvo === 'escuro') {
-  document.documentElement.setAttribute('data-theme', 'dark');
+const THEME_KEY = 'ctoperacional:tema';
+
+/** Aplica o tema salvo (ou o do SO) em <html data-theme="dark|light"> antes do React montar. */
+function aplicarTemaInicial() {
+  let tema: 'claro' | 'escuro';
+  try {
+    const salvo = localStorage.getItem(THEME_KEY);
+    if (salvo === 'claro' || salvo === 'escuro') {
+      tema = salvo;
+    } else {
+      tema = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro';
+    }
+  } catch {
+    tema = 'claro';
+  }
+  document.documentElement.setAttribute('data-theme', tema === 'escuro' ? 'dark' : 'light');
 }
+
+aplicarTemaInicial();
 
 const container = document.getElementById('root');
 if (!container) {

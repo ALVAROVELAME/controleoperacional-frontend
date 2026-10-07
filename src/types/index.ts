@@ -57,34 +57,16 @@ export interface ApiError {
 }
 
 // ============================================================
-// Tipos da aplicação — CtOperacional (Kanban)
+// Reexports dos tipos de domínio (fonte única: ./tarefa.ts)
 // ============================================================
-
-export type StatusColuna = 'a_fazer' | 'em_progresso' | 'revisao' | 'concluido';
-
-export type Prioridade = 'baixa' | 'media' | 'alta';
+export type {
+  StatusColuna,
+  Prioridade,
+  Tarefa,
+  TarefaInput,
+  Toast,
+  ToastTipo,
+} from './tarefa';
 
 export type Tema = 'claro' | 'escuro';
-
 export type Aba = 'quadro' | 'lista' | 'relatorios' | 'config';
-
-export interface Tarefa {
-  id: string;
-  titulo: string;
-  descricao?: string;
-  prioridade: Prioridade;
-  status: StatusColuna;
-  criadoEm: string;
-}
-
-export interface Coluna {
-  id: StatusColuna;
-  titulo: string;
-  icon: string;
-}
-
-export interface Toast {
-  id: string;
-  texto: string;
-  tipo: 'sucesso' | 'erro' | 'info';
-}
