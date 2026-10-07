@@ -1,7 +1,7 @@
 // src/pages/ConfirmarEmail.tsx
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { api } from '../services/api';
+import { authService } from '../services/auth.service';
 import { StatusView, type StatusOpcoes } from './Status';
 
 /* ============================================================
@@ -60,11 +60,8 @@ export default function ConfirmarEmail() {
 
     const controller = new AbortController();
 
-    api
-      .get('/api/auth/confirmar', {
-        params: { token },
-        signal: controller.signal,
-      })
+    authService
+      .confirmarEmail(token, controller.signal)
       .then(() => {
         setEstado({
           tipo: 'sucesso',

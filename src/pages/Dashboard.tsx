@@ -21,8 +21,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { ToastProvider, useToast } from '../contexts/ToastContext';
 import { TarefasProvider, useTarefas, limparCacheTarefas } from '../contexts/TarefasContext';
 import { authService } from '../services/auth.service';
-import { mensagemDeErro } from '../services/api';
+import { mensagemDeErro } from '../services/http';
 import { pomodoroApi } from '../services/pomodoro.service';
+import { sanitizarTarefa } from '../mappers/tarefa.mapper';
 import { Pomodoro, PomodoroMini, usePomodoro, POMODORO_STORAGE_KEY } from '../components/Pomodoro';
 import {
   COLUNAS,
@@ -31,10 +32,11 @@ import {
   PRIORIDADE_LABEL,
   STATUS_IDS,
   TITULO_COLUNA,
-  paraInput,
-  sanitizar,
-} from '../types/tarefa';
-import type { Prioridade, StatusColuna, Tarefa, TarefaInput } from '../types/tarefa';
+} from '../types/domain';
+import type { Prioridade, StatusColuna, Tarefa } from '../types/domain';
+
+/** Payload de criar/editar — id e criadoEm são do servidor. */
+type TarefaInput = Omit<Tarefa, 'id' | 'criadoEm'>;
 
 const THEME_KEY = 'ctoperacional:tema';
 
@@ -132,7 +134,6 @@ function useTema() {
     } catch {
       /* ignore */
     }
-    // Sincroniza o tema global com <html data-theme="dark|light">
     document.documentElement.setAttribute('data-theme', tema === 'escuro' ? 'dark' : 'light');
   }, [tema]);
   const alternar = useCallback(() => setTema((t) => (t === 'claro' ? 'escuro' : 'claro')), []);
@@ -153,7 +154,6 @@ function useBodyLock(ativo: boolean) {
 const FOCAVEIS =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
-/** Mantém o foco do teclado dentro de um diálogo e o devolve ao fechar. */
 function useFocusTrap(ref: RefObject<HTMLElement | null>, ativo: boolean) {
   useEffect(() => {
     const el = ref.current;
@@ -988,17 +988,24 @@ function DashboardConteudo() {
   const painelRef = useRef<HTMLElement>(null);
 
   // o callback sempre enxerga a tarefa em foco atual
-  const pomodoro = usePomodoro((minutos) => {
-    const alvo = tarefaFocoId ? tarefas.find((t) => t.id === tarefaFocoId) : undefined;
-    if (alvo) void registrarPomodoro(alvo.id);
-    pomodoroApi.registrarSessao({
-      tarefaId: alvo?.id ?? null,
-      tarefaTitulo: alvo?.titulo ?? null,
-      statusTarefa: alvo?.status ?? null,
-      minutos,
-      concluidoEm: new Date().toISOString(),
-    });
-    push(`🍅 Foco de ${minutos} min concluído`, 'sucesso');
+  const pomodoro = usePomodoro({
+    onEvento: (evento) => {
+      const alvo = tarefaFocoId ? tarefas.find((t) => t.id === tarefaFocoId) : undefined;
+
+      // Envia TODO evento para a API, enriquecido com dados da tarefa
+      pomodoroApi.registrarEvento({
+        ...evento,
+        tarefaId: alvo?.id ?? null,
+        tarefaTitulo: alvo?.titulo ?? null,
+        statusTarefa: alvo?.status ?? null,
+      });
+
+      // Comportamento específico quando o FOCO termina (só nesse caso)
+      if (evento.tipo === 'foco_completado') {
+        if (alvo) void registrarPomodoro(alvo.id);
+        push(`🍅 Foco de ${evento.minutosPlanejados} min concluído`, 'sucesso');
+      }
+    },
   });
 
   // editor de tarefa (modal)
@@ -1178,8 +1185,19 @@ function DashboardConteudo() {
             push('Arquivo inválido', 'erro');
             return;
           }
-          const validas = data.map(sanitizar).filter((t): t is Tarefa => t !== null);
-          const n = await importar(validas.map(paraInput));
+          const validas = data
+            .map(sanitizarTarefa)
+            .filter((t): t is Tarefa => t !== null);
+          const payload: TarefaInput[] = validas.map((t) => ({
+            titulo: t.titulo,
+            descricao: t.descricao,
+            prioridade: t.prioridade,
+            status: t.status,
+            prazo: t.prazo,
+            pomodoros: t.pomodoros,
+            pomodorosPlanejados: t.pomodorosPlanejados,
+          }));
+          const n = await importar(payload);
           if (n !== null) push(`${n} tarefas importadas`, 'sucesso');
         } catch {
           push('Erro ao importar arquivo', 'erro');

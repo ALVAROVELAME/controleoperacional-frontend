@@ -1,56 +1,63 @@
 // src/services/tarefas.service.ts
-import { api } from './api';
-import { sanitizar } from '../types/tarefa';
-import type { StatusColuna, Tarefa, TarefaInput } from '../types/tarefa';
+import { http } from './http';
+import { sanitizarTarefa, sanitizarLista, paraPayloadCriar, paraPayloadAtualizar } from '../mappers/tarefa.mapper';
+import type { Tarefa, StatusColuna } from '../types/domain';
+import type {
+  CriarTarefaRequest,
+  AtualizarTarefaRequest,
+  MudarStatusRequest,
+  TarefaResponse,
+} from '../types/api';
 
 const BASE = '/api/tarefas';
 
-const lista = (data: unknown): Tarefa[] =>
-  Array.isArray(data) ? data.map(sanitizar).filter((t): t is Tarefa => t !== null) : [];
-
-const uma = (data: unknown): Tarefa => {
-  const t = sanitizar(data);
+function uma(raw: unknown): Tarefa {
+  const t = sanitizarTarefa(raw);
   if (!t) throw new Error('Resposta inválida da API de tarefas.');
   return t;
-};
-
-/** Corpo enviado ao C#. null explícito = "limpar o campo". */
-const corpo = (t: TarefaInput, comPomodoros: boolean) => ({
-  titulo: t.titulo,
-  descricao: t.descricao ?? null,
-  prioridade: t.prioridade, // 'baixa' | 'media' | 'alta'
-  status: t.status, // 'a_fazer' | 'em_progresso' | 'revisao' | 'concluido'
-  prazo: t.prazo ?? null, // 'YYYY-MM-DD' (DateOnly?)
-  pomodorosPlanejados: t.pomodorosPlanejados ?? null,
-  ...(comPomodoros ? { pomodoros: t.pomodoros ?? 0 } : {}),
-});
+}
 
 export const tarefasService = {
-  listar: async (signal?: AbortSignal) => lista((await api.get(BASE, { signal })).data),
-
-  criar: async (t: TarefaInput) => uma((await api.post(BASE, corpo(t, true))).data),
-
-  // PUT não envia "pomodoros": o contador pertence ao servidor (evita sobrescrever com valor velho).
-  atualizar: async (id: string, t: TarefaInput) =>
-    uma((await api.put(`${BASE}/${encodeURIComponent(id)}`, corpo(t, false))).data),
-
-  mudarStatus: async (id: string, status: StatusColuna) => {
-    await api.patch(`${BASE}/${encodeURIComponent(id)}/status`, { status });
+  async listar(signal?: AbortSignal): Promise<Tarefa[]> {
+    const { data } = await http.get<TarefaResponse[]>(BASE, { signal });
+    return sanitizarLista(data);
   },
 
-  /** Incrementa +1 no servidor. */
-  registrarPomodoro: async (id: string) => {
-    await api.post(`${BASE}/${encodeURIComponent(id)}/pomodoros`);
+  async criar(t: Omit<Tarefa, 'id' | 'criadoEm'>): Promise<Tarefa> {
+    const body: CriarTarefaRequest = paraPayloadCriar(t as Tarefa);
+    const { data } = await http.post<TarefaResponse>(BASE, body);
+    return uma(data);
   },
 
-  excluir: async (id: string) => {
-    await api.delete(`${BASE}/${encodeURIComponent(id)}`);
+  async atualizar(id: string, t: Omit<Tarefa, 'id' | 'criadoEm'>): Promise<Tarefa> {
+    const body: AtualizarTarefaRequest = paraPayloadAtualizar(t as Tarefa);
+    const { data } = await http.put<TarefaResponse>(
+      `${BASE}/${encodeURIComponent(id)}`,
+      body,
+    );
+    return uma(data);
   },
 
-  zerar: async () => {
-    await api.delete(BASE);
+  async mudarStatus(id: string, status: StatusColuna): Promise<void> {
+    const body: MudarStatusRequest = { status };
+    await http.patch(`${BASE}/${encodeURIComponent(id)}/status`, body);
   },
 
-  importar: async (itens: TarefaInput[]) =>
-    lista((await api.post(`${BASE}/importar`, itens.map((t) => corpo(t, true)))).data),
+  async registrarPomodoro(id: string): Promise<void> {
+    await http.post(`${BASE}/${encodeURIComponent(id)}/pomodoros`);
+  },
+
+  async excluir(id: string): Promise<void> {
+    await http.delete(`${BASE}/${encodeURIComponent(id)}`);
+  },
+
+  async zerar(): Promise<void> {
+    await http.delete(BASE);
+  },
+
+  async importar(itens: Array<Omit<Tarefa, 'id' | 'criadoEm'>>): Promise<Tarefa[]> {
+    const body = itens.map((t) => paraPayloadCriar(t as Tarefa));
+    const { data } = await http.post<TarefaResponse[]>(`${BASE}/importar`, body);
+    return sanitizarLista(data);
+  },
 };
