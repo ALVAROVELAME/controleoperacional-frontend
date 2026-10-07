@@ -1,8 +1,8 @@
 // src/contexts/ToastContext.tsx
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { uid } from '../types/tarefa';
-import type { Toast, ToastTipo } from '../types/tarefa';
+import { uid } from '../types/domain';
+import type { Toast, ToastTipo } from '../types/domain';
 
 type ToastCtx = {
   toasts: Toast[];

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { api } from '../services/api';
+import { authService } from '../services/auth.service';
 
 // ============================================================
 // Regras de validação
@@ -689,7 +689,7 @@ export default function Signup() {
 
       setCarregando(true);
       try {
-        await api.post('/api/usuarios', { nome, email, senha });
+        await authService.cadastrar({ nome, email, senha });
         setSucesso(true);
       } catch (err: unknown) {
         const msg =

@@ -1,20 +1,8 @@
 // src/pages/Login.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { api } from '../services/api';
+import { authService } from '../services/auth.service';
 import { useAuth } from '../contexts/AuthContext';
-
-interface LoginResposta {
-  sucesso: boolean;
-  mensagem: string;
-  token: string;
-  usuario?: {
-    id: number;
-    nome: string;
-    email: string;
-    ativo: boolean;
-  };
-}
 
 /* ============================================================
    CSS do componente — Paleta: Blue + Slate
@@ -451,10 +439,7 @@ export default function Login() {
     setCarregando(true);
 
     try {
-      const { data } = await api.post<LoginResposta>('/api/auth/login', {
-        email,
-        senha,
-      });
+      const data = await authService.login({ email, senha });
 
       if (!data.token || !data.usuario) {
         throw new Error('Resposta inválida do servidor.');

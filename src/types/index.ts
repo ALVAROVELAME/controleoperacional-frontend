@@ -1,72 +1,30 @@
 // src/types/index.ts
+// Barrel de tipos. Reexporta domínio + DTOs da API.
+// Nada de "legacy" — fonte única da verdade.
 
-// ============================================================
-// Tipos da API (alinhados com o Swagger)
-// ============================================================
+// Domínio (modelos da UI)
+export * from './domain';
 
-export interface Usuario {
-  id?: string | number;
-  nome: string;
-  email: string;
-  ativo?: boolean;
-  confirmado?: boolean;
-}
-
-export interface LoginDTO {
-  email: string;
-  senha: string;
-}
-
-export interface LoginRespostaDTO {
-  sucesso?: boolean;
-  mensagem?: string;
-  token: string;
-  tipo?: string;
-  usuario?: Usuario;
-}
-
-export interface UsuarioCadastroDTO {
-  nome: string;
-  email: string;
-  senha: string;
-}
-
-export interface ExcluirContaDTO {
-  senha: string;
-}
-
-export interface MensagemRespostaDTO {
-  sucesso?: boolean;
-  mensagem: string;
-}
-
-// Cliente (endpoint /clientes do Swagger — usado apenas para testes)
-export interface Cliente {
-  id?: string | number;
-  nome: string;
-}
-
-export interface ClienteRequestDTO {
-  nome: string;
-}
-
-export interface ApiError {
-  status: number;
-  mensagem: string;
-  detalhes?: unknown;
-}
-
-// ============================================================
-// Reexports dos tipos de domínio (fonte única: ./tarefa.ts)
-// ============================================================
+// DTOs da API (contrato com o backend C#)
 export type {
-  StatusColuna,
-  Prioridade,
-  Tarefa,
-  TarefaInput,
-  Toast,
-  ToastTipo,
-} from './tarefa';
+  // Auth
+  LoginRequest,
+  LoginResponse,
+  UsuarioResponse,
+  CadastroRequest,
+  ExcluirContaRequest,
+  MensagemResponse,
 
-export type Tema = 'claro' | 'escuro';
-export type Aba = 'quadro' | 'lista' | 'relatorios' | 'config';
+  // Tarefas
+  PrioridadeApi,
+  StatusColunaApi,
+  CriarTarefaRequest,
+  AtualizarTarefaRequest,
+  MudarStatusRequest,
+  TarefaResponse,
+
+  // Pomodoro
+  EventoPomodoroRequest,
+  TipoEventoPomodoro,
+  ModoPomodoro,
+} from './api';

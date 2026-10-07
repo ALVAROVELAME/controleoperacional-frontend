@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
+import type { EventoPomodoroLocal, ModoPomodoro } from '../services/pomodoro.service';
 
 /* ------------------------------------------------------------------ *
  *  Pomodoro — arquivo independente
  *  Uso (no Dashboard):
- *    const pomodoro = usePomodoro((minutos) => { ... });
+ *    const pomodoro = usePomodoro({ onEvento: (e) => { ... } });
  *    <Pomodoro pomodoro={pomodoro} tarefas={...} tarefaId={...} onTarefaChange={...} />
  *    <PomodoroMini pomodoro={pomodoro} onAbrir={() => ...} />
  *  Herda as variáveis de cor do Dashboard (--surface, --brand, ...)
@@ -13,7 +14,7 @@ import type { ChangeEvent } from 'react';
 
 export const POMODORO_STORAGE_KEY = 'ctoperacional:pomodoro';
 
-export type ModoPomodoro = 'foco' | 'pausa_curta' | 'pausa_longa';
+export type { ModoPomodoro };
 
 type Config = {
   foco: number;
@@ -33,6 +34,11 @@ type Dia = { data: string; focos: number; minutos: number };
 type Persistido = { config: Config; estado: Estado; dia: Dia };
 
 export type PomodoroControle = ReturnType<typeof usePomodoro>;
+
+export type CallbacksPomodoro = {
+  /** Disparado a cada transição relevante do timer. */
+  onEvento?: (evento: EventoPomodoroLocal) => void;
+};
 
 const ROTULO: Record<ModoPomodoro, string> = {
   foco: 'Foco',
@@ -66,6 +72,18 @@ const limitar = (n: unknown, min: number, max: number, padrao: number) => {
   const v = typeof n === 'number' && Number.isFinite(n) ? Math.round(n) : padrao;
   return Math.min(max, Math.max(min, v));
 };
+
+/** Converte "foco_interrompido" a partir do modo atual. */
+const tipoInterrupcao = (modo: ModoPomodoro) =>
+  modo === 'foco' ? 'foco_interrompido' : 'pausa_interrompida';
+const tipoInicio = (modo: ModoPomodoro) =>
+  modo === 'foco' ? 'foco_iniciado' : 'pausa_iniciada';
+const tipoRetomada = (modo: ModoPomodoro) =>
+  modo === 'foco' ? 'foco_retomado' : 'pausa_retomada';
+const tipoPausa = (modo: ModoPomodoro) =>
+  modo === 'foco' ? 'foco_pausado' : 'pausa_pausada';
+const tipoCompletou = (modo: ModoPomodoro) =>
+  modo === 'foco' ? 'foco_completado' : 'pausa_completada';
 
 function carregar(): Persistido {
   const estadoInicial = (cfg: Config): Estado => ({
@@ -171,7 +189,7 @@ function pedirNotificacao() {
 
 /* ============================== HOOK ============================== */
 
-export function usePomodoro(onFocoConcluido?: (minutos: number) => void) {
+export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
   const [inicial] = useState(carregar);
   const [config, setConfig] = useState<Config>(inicial.config);
   const [estado, setEstado] = useState<Estado>(inicial.estado);
@@ -179,10 +197,20 @@ export function usePomodoro(onFocoConcluido?: (minutos: number) => void) {
   const [agora, setAgora] = useState(() => Date.now());
   const [aviso, setAviso] = useState('');
 
-  const callbackRef = useRef(onFocoConcluido);
+  // Mantém os callbacks sempre atualizados (sem recriar handlers)
+  const callbacksRef = useRef(callbacks);
   useEffect(() => {
-    callbackRef.current = onFocoConcluido;
+    callbacksRef.current = callbacks;
   });
+
+  const emitirEvento = useCallback((evento: EventoPomodoroLocal) => {
+    try {
+      callbacksRef.current.onEvento?.(evento);
+    } catch {
+      /* nunca deixa o callback quebrar o timer */
+    }
+  }, []);
+
   const ultimoFimRef = useRef<number | null>(null);
 
   const rodando = estado.endsAt !== null;
@@ -209,15 +237,28 @@ export function usePomodoro(onFocoConcluido?: (minutos: number) => void) {
 
   const concluir = useCallback(() => {
     const eraFoco = estado.modo === 'foco';
+    const modoConcluido = estado.modo;
+    const totalConcluido = duracaoMs(modoConcluido, config);
     const prox = proximo(estado, config);
     const iniciarAuto = config.autoIniciar;
+
+    emitirEvento({
+      tipo: tipoCompletou(modoConcluido),
+      modo: modoConcluido,
+      ciclo: estado.ciclo,
+      minutosPlanejados: Math.round(totalConcluido / 60_000),
+      minutosReais: Math.round(totalConcluido / 60_000),
+      segundosReais: Math.round(totalConcluido / 1000),
+      ocorridoEm: new Date().toISOString(),
+    });
+
     setEstado({ ...prox, endsAt: iniciarAuto ? Date.now() + prox.restanteMs : null });
+
     if (eraFoco) {
       setDia((d) => {
         const base = d.data === hoje() ? d : { data: hoje(), focos: 0, minutos: 0 };
         return { ...base, focos: base.focos + 1, minutos: base.minutos + config.foco };
       });
-      callbackRef.current?.(config.foco);
     }
     const msg = eraFoco
       ? `Foco concluído. Hora da ${ROTULO[prox.modo].toLowerCase()}.`
@@ -225,7 +266,7 @@ export function usePomodoro(onFocoConcluido?: (minutos: number) => void) {
     setAviso(msg);
     notificar('CtOperacional · Pomodoro', msg);
     if (config.som) tocarSom();
-  }, [estado, config]);
+  }, [estado, config, emitirEvento]);
 
   useEffect(() => {
     if (!rodando || restanteMs > 0) return;
@@ -245,21 +286,50 @@ export function usePomodoro(onFocoConcluido?: (minutos: number) => void) {
   }, [rodando, restanteMs, estado.modo]);
 
   const iniciar = useCallback(() => {
+    if (rodando) return;
     pedirNotificacao();
     const t = Date.now();
     setAgora(t);
+
+    const total = totalMs;
+    const jaRodou = Math.max(0, total - restanteMs);
+    const retomando = jaRodou > 0;
+
+    emitirEvento({
+      tipo: retomando ? tipoRetomada(estado.modo) : tipoInicio(estado.modo),
+      modo: estado.modo,
+      ciclo: estado.ciclo,
+      minutosPlanejados: Math.round(total / 60_000),
+      minutosReais: Math.round(jaRodou / 60_000),
+      segundosReais: Math.round(jaRodou / 1000),
+      ocorridoEm: new Date().toISOString(),
+    });
+
     setEstado((e) =>
       e.endsAt !== null
         ? e
         : { ...e, endsAt: t + (e.restanteMs > 0 ? e.restanteMs : duracaoMs(e.modo, config)) }
     );
-  }, [config]);
+  }, [rodando, estado.modo, estado.ciclo, totalMs, restanteMs, config, emitirEvento]);
 
   const pausar = useCallback(() => {
-    setEstado((e) =>
-      e.endsAt === null ? e : { ...e, restanteMs: Math.max(0, e.endsAt - Date.now()), endsAt: null }
-    );
-  }, []);
+    if (!rodando) return;
+    const t = Date.now();
+    const restante = Math.max(0, (estado.endsAt as number) - t);
+    const jaRodou = Math.max(0, totalMs - restante);
+
+    emitirEvento({
+      tipo: tipoPausa(estado.modo),
+      modo: estado.modo,
+      ciclo: estado.ciclo,
+      minutosPlanejados: Math.round(totalMs / 60_000),
+      minutosReais: Math.round(jaRodou / 60_000),
+      segundosReais: Math.round(jaRodou / 1000),
+      ocorridoEm: new Date().toISOString(),
+    });
+
+    setEstado((e) => (e.endsAt === null ? e : { ...e, restanteMs: restante, endsAt: null }));
+  }, [rodando, estado.endsAt, estado.modo, estado.ciclo, totalMs, emitirEvento]);
 
   const alternar = useCallback(() => {
     if (rodando) pausar();
@@ -267,38 +337,92 @@ export function usePomodoro(onFocoConcluido?: (minutos: number) => void) {
   }, [rodando, pausar, iniciar]);
 
   const reiniciar = useCallback(() => {
+    if (rodando || restanteMs < totalMs) {
+      const jaRodou = Math.max(0, totalMs - restanteMs);
+      emitirEvento({
+        tipo: tipoInterrupcao(estado.modo),
+        modo: estado.modo,
+        ciclo: estado.ciclo,
+        minutosPlanejados: Math.round(totalMs / 60_000),
+        minutosReais: Math.round(jaRodou / 60_000),
+        segundosReais: Math.round(jaRodou / 1000),
+        ocorridoEm: new Date().toISOString(),
+      });
+    }
     setEstado((e) => ({ ...e, restanteMs: duracaoMs(e.modo, config), endsAt: null }));
-  }, [config]);
+  }, [rodando, restanteMs, totalMs, estado.modo, estado.ciclo, config, emitirEvento]);
 
   const pular = useCallback(() => {
+    if (rodando || restanteMs < totalMs) {
+      const jaRodou = Math.max(0, totalMs - restanteMs);
+      emitirEvento({
+        tipo: tipoInterrupcao(estado.modo),
+        modo: estado.modo,
+        ciclo: estado.ciclo,
+        minutosPlanejados: Math.round(totalMs / 60_000),
+        minutosReais: Math.round(jaRodou / 60_000),
+        segundosReais: Math.round(jaRodou / 1000),
+        ocorridoEm: new Date().toISOString(),
+      });
+    }
     setEstado((e) => {
       const p = proximo(e, config);
       return { ...p, endsAt: e.endsAt !== null ? Date.now() + p.restanteMs : null };
     });
-  }, [config]);
+  }, [rodando, restanteMs, totalMs, estado.modo, estado.ciclo, config, emitirEvento]);
 
   const trocarModo = useCallback(
     (modo: ModoPomodoro) => {
-      setEstado((e) => ({ ...e, modo, restanteMs: duracaoMs(modo, config), endsAt: null }));
+      if (modo === estado.modo) return;
+      const novaDuracao = duracaoMs(modo, config);
+      emitirEvento({
+        tipo: 'modo_alterado',
+        modo,
+        ciclo: estado.ciclo,
+        minutosPlanejados: Math.round(novaDuracao / 60_000),
+        minutosReais: 0,
+        segundosReais: 0,
+        ocorridoEm: new Date().toISOString(),
+      });
+      setEstado((e) => ({ ...e, modo, restanteMs: novaDuracao, endsAt: null }));
     },
-    [config]
+    [estado.modo, estado.ciclo, config, emitirEvento]
   );
 
   /** Vai para o modo Foco e já inicia a contagem (usado ao "focar" em uma tarefa). */
   const focarAgora = useCallback(() => {
+    if (rodando) return;
     pedirNotificacao();
-    setEstado((e) => {
-      if (e.modo === 'foco' && e.endsAt !== null) return e;
-      const total = duracaoMs('foco', config);
-      const continuar = e.modo === 'foco' && e.restanteMs > 0 && e.restanteMs < total;
-      return {
-        ...e,
-        modo: 'foco',
-        restanteMs: continuar ? e.restanteMs : total,
-        endsAt: Date.now() + (continuar ? e.restanteMs : total),
-      };
+    const t = Date.now();
+    setAgora(t);
+
+    const totalFoco = duracaoMs('foco', config);
+    const mudandoModo = estado.modo !== 'foco';
+    const continuar = estado.modo === 'foco' && estado.restanteMs > 0 && estado.restanteMs < totalFoco;
+    const restante = continuar ? estado.restanteMs : totalFoco;
+    const jaRodou = Math.max(0, totalFoco - restante);
+
+    emitirEvento({
+      tipo: mudandoModo
+        ? 'modo_alterado'
+        : continuar
+          ? tipoRetomada('foco')
+          : tipoInicio('foco'),
+      modo: 'foco',
+      ciclo: estado.ciclo,
+      minutosPlanejados: Math.round(totalFoco / 60_000),
+      minutosReais: Math.round(jaRodou / 60_000),
+      segundosReais: Math.round(jaRodou / 1000),
+      ocorridoEm: new Date().toISOString(),
     });
-  }, [config]);
+
+    setEstado((e) => ({
+      ...e,
+      modo: 'foco',
+      restanteMs: continuar ? e.restanteMs : totalFoco,
+      endsAt: t + (continuar ? e.restanteMs : totalFoco),
+    }));
+  }, [rodando, estado.modo, estado.ciclo, estado.restanteMs, config, emitirEvento]);
 
   const atualizarConfig = useCallback(
     (parcial: Partial<Config>) => {

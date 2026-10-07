@@ -1,21 +1,20 @@
 // src/services/pomodoro.service.ts
-import { api } from './api';
-import type { StatusColuna } from '../types/tarefa';
+import { http } from './http';
+import type { EventoPomodoroRequest, ModoPomodoro } from '../types/api';
 
-/** Uma sessão de foco concluída. */
-export type SessaoPomodoro = {
-  tarefaId: string | null; // null quando o foco foi feito sem tarefa selecionada
-  tarefaTitulo: string | null;
-  statusTarefa: StatusColuna | null;
-  minutos: number;
-  concluidoEm: string; // ISO (DateTimeOffset no C#)
-};
+export type { ModoPomodoro };
+
+/** Payload emitido pelo hook local — o Dashboard enriquece com dados da tarefa. */
+export type EventoPomodoroLocal = Omit<
+  EventoPomodoroRequest,
+  'tarefaId' | 'tarefaTitulo' | 'statusTarefa'
+>;
 
 export const pomodoroApi = {
-  /** POST /api/pomodoros/sessoes — "fire and forget": falha aqui nunca deve atrapalhar o foco. */
-  registrarSessao(sessao: SessaoPomodoro) {
-    api.post('/api/pomodoros/sessoes', sessao).catch((err) => {
-      console.warn('[pomodoro] sessão não enviada para a API', err);
+  /** fire-and-forget: nunca bloqueia o timer */
+  registrarEvento(evento: EventoPomodoroRequest): void {
+    http.post('/api/pomodoros/eventos', evento).catch((err) => {
+      console.warn('[pomodoro] evento não enviado', err);
     });
   },
 };

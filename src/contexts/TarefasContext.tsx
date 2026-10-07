@@ -5,18 +5,34 @@ import axios from 'axios';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { tarefasService } from '../services/tarefas.service';
-import { mensagemDeErro } from '../services/api';
-import { paraInput, sanitizar } from '../types/tarefa';
-import type { StatusColuna, Tarefa, TarefaInput } from '../types/tarefa';
+import { mensagemDeErro } from '../services/http';
+import { sanitizarTarefa } from '../mappers/tarefa.mapper';
+import type { StatusColuna, Tarefa } from '../types/domain';
+
+/** Payload de criar/editar — id e criadoEm são do servidor. */
+type TarefaInput = Omit<Tarefa, 'id' | 'criadoEm'>;
 
 const LEGADO_KEY = 'ctoperacional:tarefas';
 const cacheKey = (dono: string) => `ctoperacional:cache:${dono}`;
+
+/** Converte uma Tarefa completa em payload de input (para restaurar/importar). */
+const paraInput = (t: Tarefa): TarefaInput => ({
+  titulo: t.titulo,
+  descricao: t.descricao,
+  prioridade: t.prioridade,
+  status: t.status,
+  prazo: t.prazo,
+  pomodoros: t.pomodoros,
+  pomodorosPlanejados: t.pomodorosPlanejados,
+});
 
 const lerLista = (key: string): Tarefa[] => {
   try {
     const raw = localStorage.getItem(key);
     const data = raw ? JSON.parse(raw) : [];
-    return Array.isArray(data) ? data.map(sanitizar).filter((t): t is Tarefa => t !== null) : [];
+    return Array.isArray(data)
+      ? data.map(sanitizarTarefa).filter((t): t is Tarefa => t !== null)
+      : [];
   } catch {
     return [];
   }
@@ -60,14 +76,28 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
   const [tentativa, setTentativa] = useState(0);
   const ref = useRef(tarefas);
 
+  // A chave de cache que "possui" as tarefas atualmente em memória.
+  // Atualizada ANTES de resetar a lista quando o dono muda.
+  const cacheAtualRef = useRef(cacheKey(dono));
+
+  // 1) Quando o usuário muda, troca a chave e recarrega do cache do novo dono.
+  useEffect(() => {
+    const nova = cacheKey(dono);
+    if (cacheAtualRef.current !== nova) {
+      cacheAtualRef.current = nova;
+      setTarefas(lerLista(nova));
+    }
+  }, [dono]);
+
+  // 2) Persiste localmente. Usa cacheAtualRef.current (já trocado no efeito acima).
   useEffect(() => {
     ref.current = tarefas;
     try {
-      localStorage.setItem(cacheKey(dono), JSON.stringify(tarefas));
+      localStorage.setItem(cacheAtualRef.current, JSON.stringify(tarefas));
     } catch {
       /* armazenamento cheio ou indisponível */
     }
-  }, [tarefas, dono]);
+  }, [tarefas]);
 
   const executar = useCallback(async <T,>(fn: () => Promise<T>): Promise<T> => {
     setPendentes((n) => n + 1);
@@ -83,9 +113,13 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
   const salvar = useCallback(
     async (dados: TarefaInput, id?: string) => {
       try {
-        const salva = await executar(() => (id ? tarefasService.atualizar(id, dados) : tarefasService.criar(dados)));
+        const salva = await executar(() =>
+          id ? tarefasService.atualizar(id, dados) : tarefasService.criar(dados),
+        );
         setTarefas((prev) =>
-          prev.some((t) => t.id === salva.id) ? prev.map((t) => (t.id === salva.id ? salva : t)) : [...prev, salva]
+          prev.some((t) => t.id === salva.id)
+            ? prev.map((t) => (t.id === salva.id ? salva : t))
+            : [...prev, salva],
         );
         return salva;
       } catch (err) {
@@ -93,7 +127,7 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
         return null;
       }
     },
-    [executar, push]
+    [executar, push],
   );
 
   const restaurar = useCallback((t: Tarefa) => salvar(paraInput(t)), [salvar]);
@@ -112,7 +146,7 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
         return null;
       }
     },
-    [executar, push]
+    [executar, push],
   );
 
   const mover = useCallback(
@@ -124,27 +158,35 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
         await executar(() => tarefasService.mudarStatus(id, status));
         return true;
       } catch (err) {
-        setTarefas((prev) => prev.map((t) => (t.id === id ? { ...t, status: antes.status } : t)));
+        setTarefas((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, status: antes.status } : t)),
+        );
         push(mensagemDeErro(err, 'Não foi possível mover a tarefa.'), 'erro');
         return false;
       }
     },
-    [executar, push]
+    [executar, push],
   );
 
   const registrarPomodoro = useCallback(
     async (id: string) => {
-      setTarefas((prev) => prev.map((t) => (t.id === id ? { ...t, pomodoros: (t.pomodoros ?? 0) + 1 } : t)));
+      setTarefas((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, pomodoros: (t.pomodoros ?? 0) + 1 } : t)),
+      );
       try {
         await executar(() => tarefasService.registrarPomodoro(id));
       } catch (err) {
         setTarefas((prev) =>
-          prev.map((t) => (t.id === id ? { ...t, pomodoros: Math.max(0, (t.pomodoros ?? 1) - 1) || undefined } : t))
+          prev.map((t) =>
+            t.id === id
+              ? { ...t, pomodoros: Math.max(0, (t.pomodoros ?? 1) - 1) || undefined }
+              : t,
+          ),
         );
         push(mensagemDeErro(err, 'Não foi possível registrar o pomodoro.'), 'erro');
       }
     },
-    [executar, push]
+    [executar, push],
   );
 
   const importar = useCallback(
@@ -162,7 +204,7 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
         return null;
       }
     },
-    [executar, push]
+    [executar, push],
   );
 
   const zerar = useCallback(async () => {
@@ -210,7 +252,8 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
       });
 
     return () => ctrl.abort();
-  }, [tentativa, push, importar]);
+    // `dono` incluso: quando o usuário troca, refaz o fetch
+  }, [tentativa, dono, push, importar]);
 
   const recarregar = useCallback(() => setTentativa((n) => n + 1), []);
 
@@ -228,7 +271,7 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
       importar,
       zerar,
     }),
-    [tarefas, estado, pendentes, recarregar, salvar, excluir, restaurar, mover, registrarPomodoro, importar, zerar]
+    [tarefas, estado, pendentes, recarregar, salvar, excluir, restaurar, mover, registrarPomodoro, importar, zerar],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
