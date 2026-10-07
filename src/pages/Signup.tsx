@@ -624,9 +624,10 @@ export default function Signup() {
   const [sucesso, setSucesso] = useState(false);
   const [tocados, setTocados] = useState<Record<string, boolean>>({});
 
-  // Limpa erro quando o usuário digita
+  // Limpa o erro a cada mudança nos campos (sem depender de `erro` para
+  // não disparar re-render desnecessário nem quebrar o exhaustive-deps)
   useEffect(() => {
-    if (erro) setErro(null);
+    setErro(null);
   }, [nome, email, senha, confirmar]);
 
   // ---------- Força da senha ----------
