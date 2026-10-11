@@ -5,9 +5,18 @@ import type { EventoPomodoroLocal, ModoPomodoro } from '../services/pomodoro.ser
 /* ------------------------------------------------------------------ *
  *  Pomodoro — arquivo independente
  *  Uso (no Dashboard):
- *    const pomodoro = usePomodoro({ onEvento: (e) => { ... } });
+ *    const pomodoro = usePomodoro({
+ *      onEvento: (e, contexto) => { ... }   // contexto agora é opcional
+ *    });
  *    <Pomodoro pomodoro={pomodoro} tarefas={...} tarefaId={...} onTarefaChange={...} />
  *    <PomodoroMini pomodoro={pomodoro} onAbrir={() => ...} />
+ *
+ *  Contexto de tarefa:
+ *    Toda ação aceita um `ContextoTarefa` opcional:
+ *      p.iniciar({ tarefaId, tarefaTitulo, statusTarefa })
+ *      p.focarAgora({ tarefaId, tarefaTitulo, statusTarefa })
+ *    O contexto é propagado para `onEvento(evento, contexto)` e
+ *    guardado em ref para eventos que acontecem depois (ex: concluir).
  *  Herda as variáveis de cor do Dashboard (--surface, --brand, ...)
  *  e funciona sozinho se elas não existirem (usa valores padrão).
  * ------------------------------------------------------------------ */
@@ -15,6 +24,13 @@ import type { EventoPomodoroLocal, ModoPomodoro } from '../services/pomodoro.ser
 export const POMODORO_STORAGE_KEY = 'ctoperacional:pomodoro';
 
 export type { ModoPomodoro };
+
+/** Contexto opcional de tarefa anexado aos eventos. */
+export type ContextoTarefa = {
+  tarefaId?: string | null;
+  tarefaTitulo?: string | null;
+  statusTarefa?: string | null;
+};
 
 type Config = {
   foco: number;
@@ -36,8 +52,13 @@ type Persistido = { config: Config; estado: Estado; dia: Dia };
 export type PomodoroControle = ReturnType<typeof usePomodoro>;
 
 export type CallbacksPomodoro = {
-  /** Disparado a cada transição relevante do timer. */
-  onEvento?: (evento: EventoPomodoroLocal) => void;
+  /**
+   * Disparado a cada transição relevante do timer.
+   * O `contexto` é o último contexto conhecido (o que foi passado
+   * na ação mais recente, ou o que estava guardado quando o timer
+   * começou — importante para eventos automáticos como `concluir`).
+   */
+  onEvento?: (evento: EventoPomodoroLocal, contexto?: ContextoTarefa) => void;
 };
 
 const ROTULO: Record<ModoPomodoro, string> = {
@@ -203,13 +224,25 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
     callbacksRef.current = callbacks;
   });
 
-  const emitirEvento = useCallback((evento: EventoPomodoroLocal) => {
-    try {
-      callbacksRef.current.onEvento?.(evento);
-    } catch {
-      /* nunca deixa o callback quebrar o timer */
-    }
-  }, []);
+  /**
+   * Último contexto conhecido (tarefa em foco). Guardado em ref para
+   * que eventos disparados DEPOIS (como `concluir`, que roda no fim do
+   * timer) também carreguem o contexto correto.
+   */
+  const contextoRef = useRef<ContextoTarefa | undefined>(undefined);
+
+  const emitirEvento = useCallback(
+    (evento: EventoPomodoroLocal, contexto?: ContextoTarefa) => {
+      try {
+        // Se a ação não passou contexto, usa o último guardado (fallback)
+        const ctx = contexto ?? contextoRef.current;
+        callbacksRef.current.onEvento?.(evento, ctx);
+      } catch {
+        /* nunca deixa o callback quebrar o timer */
+      }
+    },
+    []
+  );
 
   const ultimoFimRef = useRef<number | null>(null);
 
@@ -242,6 +275,9 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
     const prox = proximo(estado, config);
     const iniciarAuto = config.autoIniciar;
 
+    // ⚠️ Evento automático: NÃO recebe contexto novo, mas usa o último
+    // guardado (o da ação que iniciou o timer). Isso garante que o
+    // `foco_completado` carregue o mesmo `tarefaId` do `foco_iniciado`.
     emitirEvento({
       tipo: tipoCompletou(modoConcluido),
       modo: modoConcluido,
@@ -285,8 +321,9 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
     };
   }, [rodando, restanteMs, estado.modo]);
 
-  const iniciar = useCallback(() => {
+  const iniciar = useCallback((contexto?: ContextoTarefa) => {
     if (rodando) return;
+    if (contexto) contextoRef.current = contexto;
     pedirNotificacao();
     const t = Date.now();
     setAgora(t);
@@ -295,15 +332,18 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
     const jaRodou = Math.max(0, total - restanteMs);
     const retomando = jaRodou > 0;
 
-    emitirEvento({
-      tipo: retomando ? tipoRetomada(estado.modo) : tipoInicio(estado.modo),
-      modo: estado.modo,
-      ciclo: estado.ciclo,
-      minutosPlanejados: Math.round(total / 60_000),
-      minutosReais: Math.round(jaRodou / 60_000),
-      segundosReais: Math.round(jaRodou / 1000),
-      ocorridoEm: new Date().toISOString(),
-    });
+    emitirEvento(
+      {
+        tipo: retomando ? tipoRetomada(estado.modo) : tipoInicio(estado.modo),
+        modo: estado.modo,
+        ciclo: estado.ciclo,
+        minutosPlanejados: Math.round(total / 60_000),
+        minutosReais: Math.round(jaRodou / 60_000),
+        segundosReais: Math.round(jaRodou / 1000),
+        ocorridoEm: new Date().toISOString(),
+      },
+      contexto
+    );
 
     setEstado((e) =>
       e.endsAt !== null
@@ -312,58 +352,68 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
     );
   }, [rodando, estado.modo, estado.ciclo, totalMs, restanteMs, config, emitirEvento]);
 
-  const pausar = useCallback(() => {
+  const pausar = useCallback((contexto?: ContextoTarefa) => {
     if (!rodando) return;
+    if (contexto) contextoRef.current = contexto;
     const t = Date.now();
     const restante = Math.max(0, (estado.endsAt as number) - t);
     const jaRodou = Math.max(0, totalMs - restante);
 
-    emitirEvento({
-      tipo: tipoPausa(estado.modo),
-      modo: estado.modo,
-      ciclo: estado.ciclo,
-      minutosPlanejados: Math.round(totalMs / 60_000),
-      minutosReais: Math.round(jaRodou / 60_000),
-      segundosReais: Math.round(jaRodou / 1000),
-      ocorridoEm: new Date().toISOString(),
-    });
+    emitirEvento(
+      {
+        tipo: tipoPausa(estado.modo),
+        modo: estado.modo,
+        ciclo: estado.ciclo,
+        minutosPlanejados: Math.round(totalMs / 60_000),
+        minutosReais: Math.round(jaRodou / 60_000),
+        segundosReais: Math.round(jaRodou / 1000),
+        ocorridoEm: new Date().toISOString(),
+      },
+      contexto
+    );
 
     setEstado((e) => (e.endsAt === null ? e : { ...e, restanteMs: restante, endsAt: null }));
   }, [rodando, estado.endsAt, estado.modo, estado.ciclo, totalMs, emitirEvento]);
 
-  const alternar = useCallback(() => {
-    if (rodando) pausar();
-    else iniciar();
+  const alternar = useCallback((contexto?: ContextoTarefa) => {
+    if (rodando) pausar(contexto);
+    else iniciar(contexto);
   }, [rodando, pausar, iniciar]);
 
-  const reiniciar = useCallback(() => {
+  const reiniciar = useCallback((contexto?: ContextoTarefa) => {
     if (rodando || restanteMs < totalMs) {
       const jaRodou = Math.max(0, totalMs - restanteMs);
-      emitirEvento({
-        tipo: tipoInterrupcao(estado.modo),
-        modo: estado.modo,
-        ciclo: estado.ciclo,
-        minutosPlanejados: Math.round(totalMs / 60_000),
-        minutosReais: Math.round(jaRodou / 60_000),
-        segundosReais: Math.round(jaRodou / 1000),
-        ocorridoEm: new Date().toISOString(),
-      });
+      emitirEvento(
+        {
+          tipo: tipoInterrupcao(estado.modo),
+          modo: estado.modo,
+          ciclo: estado.ciclo,
+          minutosPlanejados: Math.round(totalMs / 60_000),
+          minutosReais: Math.round(jaRodou / 60_000),
+          segundosReais: Math.round(jaRodou / 1000),
+          ocorridoEm: new Date().toISOString(),
+        },
+        contexto
+      );
     }
     setEstado((e) => ({ ...e, restanteMs: duracaoMs(e.modo, config), endsAt: null }));
   }, [rodando, restanteMs, totalMs, estado.modo, estado.ciclo, config, emitirEvento]);
 
-  const pular = useCallback(() => {
+  const pular = useCallback((contexto?: ContextoTarefa) => {
     if (rodando || restanteMs < totalMs) {
       const jaRodou = Math.max(0, totalMs - restanteMs);
-      emitirEvento({
-        tipo: tipoInterrupcao(estado.modo),
-        modo: estado.modo,
-        ciclo: estado.ciclo,
-        minutosPlanejados: Math.round(totalMs / 60_000),
-        minutosReais: Math.round(jaRodou / 60_000),
-        segundosReais: Math.round(jaRodou / 1000),
-        ocorridoEm: new Date().toISOString(),
-      });
+      emitirEvento(
+        {
+          tipo: tipoInterrupcao(estado.modo),
+          modo: estado.modo,
+          ciclo: estado.ciclo,
+          minutosPlanejados: Math.round(totalMs / 60_000),
+          minutosReais: Math.round(jaRodou / 60_000),
+          segundosReais: Math.round(jaRodou / 1000),
+          ocorridoEm: new Date().toISOString(),
+        },
+        contexto
+      );
     }
     setEstado((e) => {
       const p = proximo(e, config);
@@ -372,26 +422,31 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
   }, [rodando, restanteMs, totalMs, estado.modo, estado.ciclo, config, emitirEvento]);
 
   const trocarModo = useCallback(
-    (modo: ModoPomodoro) => {
+    (modo: ModoPomodoro, contexto?: ContextoTarefa) => {
       if (modo === estado.modo) return;
+      if (contexto) contextoRef.current = contexto;
       const novaDuracao = duracaoMs(modo, config);
-      emitirEvento({
-        tipo: 'modo_alterado',
-        modo,
-        ciclo: estado.ciclo,
-        minutosPlanejados: Math.round(novaDuracao / 60_000),
-        minutosReais: 0,
-        segundosReais: 0,
-        ocorridoEm: new Date().toISOString(),
-      });
+      emitirEvento(
+        {
+          tipo: 'modo_alterado',
+          modo,
+          ciclo: estado.ciclo,
+          minutosPlanejados: Math.round(novaDuracao / 60_000),
+          minutosReais: 0,
+          segundosReais: 0,
+          ocorridoEm: new Date().toISOString(),
+        },
+        contexto
+      );
       setEstado((e) => ({ ...e, modo, restanteMs: novaDuracao, endsAt: null }));
     },
     [estado.modo, estado.ciclo, config, emitirEvento]
   );
 
   /** Vai para o modo Foco e já inicia a contagem (usado ao "focar" em uma tarefa). */
-  const focarAgora = useCallback(() => {
+  const focarAgora = useCallback((contexto?: ContextoTarefa) => {
     if (rodando) return;
+    if (contexto) contextoRef.current = contexto;
     pedirNotificacao();
     const t = Date.now();
     setAgora(t);
@@ -402,19 +457,22 @@ export function usePomodoro(callbacks: CallbacksPomodoro = {}) {
     const restante = continuar ? estado.restanteMs : totalFoco;
     const jaRodou = Math.max(0, totalFoco - restante);
 
-    emitirEvento({
-      tipo: mudandoModo
-        ? 'modo_alterado'
-        : continuar
-          ? tipoRetomada('foco')
-          : tipoInicio('foco'),
-      modo: 'foco',
-      ciclo: estado.ciclo,
-      minutosPlanejados: Math.round(totalFoco / 60_000),
-      minutosReais: Math.round(jaRodou / 60_000),
-      segundosReais: Math.round(jaRodou / 1000),
-      ocorridoEm: new Date().toISOString(),
-    });
+    emitirEvento(
+      {
+        tipo: mudandoModo
+          ? 'modo_alterado'
+          : continuar
+            ? tipoRetomada('foco')
+            : tipoInicio('foco'),
+        modo: 'foco',
+        ciclo: estado.ciclo,
+        minutosPlanejados: Math.round(totalFoco / 60_000),
+        minutosReais: Math.round(jaRodou / 60_000),
+        segundosReais: Math.round(jaRodou / 1000),
+        ocorridoEm: new Date().toISOString(),
+      },
+      contexto
+    );
 
     setEstado((e) => ({
       ...e,
@@ -583,6 +641,27 @@ export function Pomodoro({ pomodoro: p, tarefas = [], tarefaId = null, onTarefaC
   const elegiveis = tarefas.filter((t) => t.status !== 'concluido');
   const valor = tarefaId && elegiveis.some((t) => t.id === tarefaId) ? tarefaId : '';
 
+  /**
+   * Monta o contexto da tarefa em foco. Chamado ANTES de cada ação no
+   * componente para que o evento já saia enriquecido — sem depender do
+   * Dashboard usar refs ou qualquer coisa parecida.
+   */
+  const contextoAtual = (): ContextoTarefa | undefined => {
+    if (!tarefaId) return undefined;
+    const t = tarefas.find((x) => x.id === tarefaId);
+    if (!t) return { tarefaId };
+    return {
+      tarefaId: t.id,
+      tarefaTitulo: t.titulo,
+      statusTarefa: t.status,
+    };
+  };
+
+  const handleAlternar = () => p.alternar(contextoAtual());
+  const handleReiniciar = () => p.reiniciar(contextoAtual());
+  const handlePular = () => p.pular(contextoAtual());
+  const handleTrocarModo = (m: ModoPomodoro) => p.trocarModo(m, contextoAtual());
+
   const numero = (campo: 'foco' | 'pausaCurta' | 'pausaLonga' | 'ciclos', min: number, max: number) =>
     (e: ChangeEvent<HTMLInputElement>) => {
       const v = parseInt(e.target.value, 10);
@@ -610,7 +689,7 @@ export function Pomodoro({ pomodoro: p, tarefas = [], tarefaId = null, onTarefaC
             type="button"
             className="pomo-mode"
             aria-pressed={estado.modo === m}
-            onClick={() => p.trocarModo(m)}
+            onClick={() => handleTrocarModo(m)}
           >
             {ROTULO[m]}
           </button>
@@ -659,20 +738,20 @@ export function Pomodoro({ pomodoro: p, tarefas = [], tarefaId = null, onTarefaC
         <button
           type="button"
           className="pomo-btn pomo-btn--icon"
-          onClick={p.reiniciar}
+          onClick={handleReiniciar}
           aria-label="Reiniciar temporizador"
           title="Reiniciar"
         >
           <span aria-hidden="true">↺</span>
         </button>
-        <button type="button" className="pomo-btn pomo-btn--main" onClick={p.alternar}>
+        <button type="button" className="pomo-btn pomo-btn--main" onClick={handleAlternar}>
           <span aria-hidden="true">{rodando ? '⏸' : '▶'}</span>
           {rodando ? 'Pausar' : restanteMs < totalMs ? 'Continuar' : 'Iniciar'}
         </button>
         <button
           type="button"
           className="pomo-btn pomo-btn--icon"
-          onClick={p.pular}
+          onClick={handlePular}
           aria-label="Pular para a próxima etapa"
           title="Pular etapa"
         >
