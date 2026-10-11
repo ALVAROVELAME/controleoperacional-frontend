@@ -790,7 +790,7 @@ function NovaTarefaInline({
     setTitulo('');
     setDescricao('');
     setPrazo('');
-    inputRef.current?.focus(); // continua aberto para adicionar várias em sequência
+    inputRef.current?.focus();
   };
 
   return (
@@ -987,10 +987,29 @@ function DashboardConteudo() {
   const [painelFoco, setPainelFoco] = useState(true);
   const painelRef = useRef<HTMLElement>(null);
 
-  // o callback sempre enxerga a tarefa em foco atual
+  /* ------------------------------------------------------------
+     tarefaFocoRef: sempre tem o id atual de forma SÍNCRONA.
+     O callback onEvento do Pomodoro lê deste ref em vez do state,
+     evitando o problema clássico de "stale closure" (o state ainda
+     não atualizou quando o timer dispara o primeiro evento).
+     ------------------------------------------------------------ */
+  const tarefaFocoRef = useRef<string | null>(null);
+
+  const setFoco = useCallback((id: string | null) => {
+    tarefaFocoRef.current = id;   // síncrono — leitura imediata pelo callback
+    setTarefaFocoId(id);          // assíncrono — re-render da UI
+  }, []);
+
+  const tarefasRef = useRef(tarefas);
+  useEffect(() => { tarefasRef.current = tarefas; }, [tarefas]);
+
   const pomodoro = usePomodoro({
     onEvento: (evento) => {
-      const alvo = tarefaFocoId ? tarefas.find((t) => t.id === tarefaFocoId) : undefined;
+      // Lê do REF (valor atual, síncrono) — não do state (que pode estar atrasado)
+      const focoId = tarefaFocoRef.current;
+      const alvo = focoId
+        ? tarefasRef.current.find((t) => t.id === focoId)
+        : undefined;
 
       // Envia TODO evento para a API, enriquecido com dados da tarefa
       pomodoroApi.registrarEvento({
@@ -1124,7 +1143,8 @@ function DashboardConteudo() {
     async (t: Tarefa) => {
       const removida = await excluir(t.id);
       if (!removida) return;
-      setTarefaFocoId((atual) => (atual === t.id ? null : atual));
+      // Se a tarefa excluída era a que estava em foco, limpa o foco (via ref+state)
+      if (tarefaFocoRef.current === t.id) setFoco(null);
       push(`"${cortar(t.titulo)}" excluída`, 'info', {
         rotulo: 'Desfazer',
         fn: () => {
@@ -1132,7 +1152,7 @@ function DashboardConteudo() {
         },
       });
     },
-    [excluir, restaurar, push]
+    [excluir, restaurar, push, setFoco]
   );
 
   const handleMover = useCallback(
@@ -1146,12 +1166,15 @@ function DashboardConteudo() {
   const { focarAgora } = pomodoro;
   const iniciarFoco = useCallback(
     (t: Tarefa) => {
-      setTarefaFocoId(t.id);
+      // ⚠️ ORDEM IMPORTA: setFoco atualiza o REF de forma síncrona,
+      // então quando focarAgora() disparar o primeiro evento, o callback
+      // onEvento vai ler o id da tarefa correta.
+      setFoco(t.id);
       if (t.status === 'a_fazer') void mover(t.id, 'em_progresso');
       focarAgora();
       push(`Foco iniciado: ${cortar(t.titulo)}`, 'info');
     },
-    [mover, focarAgora, push]
+    [mover, focarAgora, push, setFoco]
   );
 
   const abrirPainelFoco = useCallback(() => {
@@ -1214,7 +1237,7 @@ function DashboardConteudo() {
     const ok = await zerar();
     setZerando(false);
     if (!ok) return;
-    setTarefaFocoId(null);
+    setFoco(null);
     setConfirmarZerar(false);
     push('Todas as tarefas foram removidas', 'info');
   };
@@ -1692,7 +1715,7 @@ function DashboardConteudo() {
                         pomodoro={pomodoro}
                         tarefas={tarefasPomodoro}
                         tarefaId={tarefaFocoId}
-                        onTarefaChange={setTarefaFocoId}
+                        onTarefaChange={setFoco}
                       />
                       <section className="dash-panel" aria-labelledby="fila-titulo">
                         <div className="dash-panel-head">
