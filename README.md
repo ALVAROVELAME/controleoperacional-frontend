@@ -138,26 +138,11 @@ cd controleoperacional-frontend
 # 2. Instale as dependências
 npm ci
 
-# 3. Configure as variáveis de ambiente (veja abaixo)
-cp .env.example .env
-# No PowerShell: Copy-Item .env.example .env
-# Edite VITE_API_URL com o endereço da sua API.
-
-# 4. Rode em modo desenvolvimento
+# 3. Rode em modo desenvolvimento
 npm run dev
 ```
 
 Abra o endereço exibido pelo Vite no terminal (normalmente `http://localhost:5173`).
-
-### Variáveis de ambiente
-
-Crie um arquivo `.env` na raiz do projeto com:
-
-```env
-VITE_API_URL=https://api.example.invalid
-```
-
-> ⚠️ **Importante:** o `VITE_API_URL` é obrigatório. Se não estiver definido, a aplicação lança erro explícito na inicialização.
 
 ---
 
@@ -287,8 +272,7 @@ O projeto inclui um `vercel.json` que configura **SPA rewrites** para o React Ro
 
 1. Importe o repositório no [Vercel](https://vercel.com/new)
 2. Configure o **Root Directory** para `ctoperacional-frontend` (se estiver em subpasta)
-3. Adicione a variável `VITE_API_URL` em *Settings → Environment Variables*
-4. Deploy 🎉
+3. Faça o deploy 🎉
 
 ### Outras plataformas
 
