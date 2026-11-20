@@ -26,21 +26,21 @@ http.interceptors.request.use((config) => {
   return config;
 });
 
-// ---------------- Interceptor: response ----------------
-const ROTAS_SEM_REDIRECT = ['/api/auth/login', '/api/auth/confirmar'];
-
+// Uma resposta antiga não deve invalidar uma sessão iniciada depois dela.
+// Requisições públicas sem token também não devem alterar a navegação.
 http.interceptors.response.use(
   (r) => r,
   (error) => {
     const status = error?.response?.status;
     const url: string = error?.config?.url ?? '';
-    const publica = ROTAS_SEM_REDIRECT.some((r) => url.includes(r));
-    const jaNoLogin = window.location.pathname.startsWith('/login');
+    const authorization: string | undefined = error?.config?.headers?.get?.('Authorization');
+    const tokenAtual = localStorage.getItem('token');
+    const autenticacaoPublica = ['/api/auth/login', '/api/auth/confirmar'].some((rota) => url.includes(rota));
 
-    if (status === 401 && !publica && !jaNoLogin) {
+    if (status === 401 && !autenticacaoPublica && tokenAtual && authorization === `Bearer ${tokenAtual}`) {
       localStorage.removeItem('token');
       localStorage.removeItem('usuario');
-      window.location.href = '/login';
+      window.dispatchEvent(new Event('auth:session-expired'));
     }
     return Promise.reject(error);
   },

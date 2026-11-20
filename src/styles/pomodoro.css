@@ -1,0 +1,95 @@
+.pomo {
+  --pomo-cor: var(--brand, #2563eb);
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: var(--radius, 14px);
+  padding: 18px;
+  color: var(--ink, #0f172a);
+  @apply flex flex-col; gap: 14px;
+}
+.pomo--pausa_curta { --pomo-cor: var(--ok, #059669); }
+.pomo--pausa_longa { --pomo-cor: var(--warn, #d97706); }
+.pomo-head { @apply flex items-center; justify-content: space-between; gap: 8px; }
+.pomo-title { margin: 0; font-size: 14.5px; font-weight: 700; letter-spacing: -.01em; }
+.pomo-today { font-size: 12.5px; color: var(--muted, #64748b); font-variant-numeric: tabular-nums; }
+.pomo-modes {
+  @apply grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px;
+  background: var(--surface-2, #f1f5f9); border-radius: 10px;
+}
+.pomo-mode {
+  border: 0; background: transparent; padding: 7px 4px; border-radius: 7px; cursor: pointer;
+  font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink-soft, #334155);
+}
+.pomo-mode:hover { color: var(--ink, #0f172a); }
+.pomo-mode[aria-pressed="true"] {
+  background: var(--surface, #fff); color: var(--pomo-cor);
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+}
+.pomo-dial { @apply relative; width: 190px; height: 190px; margin: 0 auto; }
+.pomo-dial svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.pomo-ring-bg { stroke: var(--surface-3, #e2e8f0); }
+.pomo-ring { stroke: var(--pomo-cor); transition: stroke-dashoffset .3s linear; }
+.pomo-center {
+  @apply absolute; inset: 0; @apply flex flex-col items-center justify-center; gap: 2px;
+}
+.pomo-time {
+  font-size: 40px; font-weight: 800; letter-spacing: -.03em; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.pomo-label { font-size: 12.5px; font-weight: 600; color: var(--muted, #64748b); }
+.pomo-dots { @apply flex justify-center; gap: 6px; }
+.pomo-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--surface-3, #e2e8f0); border: 1.5px solid transparent;
+}
+.pomo-dot.is-done { background: var(--pomo-cor); }
+.pomo-dot.is-current { border-color: var(--pomo-cor); background: transparent; }
+.pomo-controls { @apply flex; gap: 8px; }
+.pomo-btn {
+  flex: 1; @apply inline-flex items-center justify-center; gap: 6px;
+  padding: 10px 12px; min-height: 42px; border-radius: 10px; cursor: pointer;
+  font: inherit; font-size: 13.5px; font-weight: 600;
+  border: 1.5px solid var(--border, #e2e8f0); background: var(--surface, #fff); color: var(--ink, #0f172a);
+}
+.pomo-btn:hover { border-color: var(--pomo-cor); color: var(--pomo-cor); }
+.pomo-btn--main {
+  flex: 2; background: var(--pomo-cor); border-color: var(--pomo-cor);
+  color: var(--brand-ink, #fff);
+}
+.pomo-btn--main:hover { filter: brightness(1.08); color: var(--brand-ink, #fff); }
+.pomo-btn--icon { flex: 0 0 42px; padding: 0; }
+.pomo :focus-visible { outline: 3px solid var(--brand-2, #3b82f6); outline-offset: 2px; }
+.pomo-field { @apply flex flex-col; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft, #334155); }
+.pomo-select, .pomo-number {
+  width: 100%; padding: 9px 10px; border-radius: 9px; font: inherit; font-size: 13.5px;
+  background: var(--surface, #fff); color: var(--ink, #0f172a);
+  border: 1.5px solid var(--border, #e2e8f0);
+}
+.pomo-config { border-top: 1px solid var(--border, #e2e8f0); padding-top: 12px; }
+.pomo-config summary {
+  cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-soft, #334155);
+  list-style: none; @apply flex items-center; justify-content: space-between;
+}
+.pomo-config summary::-webkit-details-marker { @apply hidden; }
+.pomo-config-grid { @apply grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+.pomo-check { @apply flex items-center; gap: 8px; font-size: 13px; margin-top: 10px; cursor: pointer; }
+.pomo-check input { width: 18px; height: 18px; accent-color: var(--pomo-cor); }
+.pomo-mini {
+  @apply inline-flex items-center; gap: 8px; padding: 7px 12px; min-height: 40px;
+  border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700;
+  background: var(--brand-soft, #eff6ff); color: var(--brand, #2563eb);
+  border: 1px solid var(--border, #e2e8f0); font-variant-numeric: tabular-nums;
+}
+.pomo-mini:hover { border-color: var(--brand, #2563eb); }
+.pomo-mini:focus-visible { outline: 3px solid var(--brand-2, #3b82f6); outline-offset: 2px; }
+.pomo-mini-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pomo-mini.is-running .pomo-mini-dot { animation: pomoPulse 1.4s ease-in-out infinite; }
+@keyframes pomoPulse { 50% { opacity: .25; } }
+.pomo-sr {
+  @apply absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  @apply overflow-hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pomo-ring { transition: none; }
+  .pomo-mini.is-running .pomo-mini-dot { animation: none; }
+}

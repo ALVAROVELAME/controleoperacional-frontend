@@ -1,7 +1,4 @@
-// src/contexts/AuthContext.tsx
 import {
-  createContext,
-  useContext,
   useEffect,
   useState,
   useCallback,
@@ -9,16 +6,7 @@ import {
 } from 'react';
 import { authService } from '../services/auth.service';
 import type { UsuarioResponse as Usuario } from '../types/api';
-
-interface AuthContextType {
-  usuario: Usuario | null;
-  carregando: boolean;
-  autenticado: boolean;
-  login: (usuario: Usuario, token: string) => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(() =>
@@ -42,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const dados = await authService.me();
-        if (ativo) {
+        if (ativo && authService.getToken() === token) {
           setUsuario(dados);
           localStorage.setItem('usuario', JSON.stringify(dados));
         }
@@ -54,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Só desloga em caso de problema de autenticação (401/403)
         // Em erros de rede/servidor mantém o usuário em cache (sessão otimista)
-        if (status === 401 || status === 403) {
+        if ((status === 401 || status === 403) && authService.getToken() === token) {
           authService.logout();
           setUsuario(null);
         }
@@ -81,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUsuario(null);
       }
       // Se o usuário foi atualizado em outra aba, sincroniza
-      if (e.key === 'usuario' && e.newValue) {
+      if (e.key === 'usuario' && e.newValue && authService.getToken()) {
         try {
           setUsuario(JSON.parse(e.newValue) as Usuario);
         } catch {
@@ -90,8 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    const onSessionExpired = () => setUsuario(null);
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('auth:session-expired', onSessionExpired);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('auth:session-expired', onSessionExpired);
+    };
   }, []);
 
   const login = useCallback((user: Usuario, token: string) => {
@@ -118,10 +111,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth deve ser usado dentro de <AuthProvider>');
-  return ctx;
 }

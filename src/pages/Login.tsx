@@ -1,3 +1,6 @@
+import STYLES from '../styles/login.css?inline';
+import { Icon } from '../components/LandingIcons';
+import PUBLIC_STYLES from '../styles/publicstyles.css?inline';
 // src/pages/Login.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -7,411 +10,7 @@ import { useAuth } from '../contexts/AuthContext';
 /* ============================================================
    CSS do componente — Paleta: Blue + Slate
    ============================================================ */
-const STYLES = `
-.lg {
-  --bg: #ffffff;
-  --bg-soft: #f8fafc;
-  --ink: #0f172a;
-  --ink-soft: #334155;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --line-strong: #cbd5e1;
-  --brand: #2563eb;
-  --brand-2: #3b82f6;
-  --brand-3: #1d4ed8;
-  --brand-soft: #eff6ff;
-  --danger-bg: #fef2f2;
-  --danger-ink: #991b1b;
-  --danger-line: #fecaca;
 
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  color: var(--ink);
-  background: var(--bg-soft);
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-.lg *, .lg *::before, .lg *::after { box-sizing: border-box; }
-.lg h1, .lg h2, .lg h3 { margin: 0; letter-spacing: -.02em; }
-.lg p { margin: 0; }
-.lg a { color: inherit; text-decoration: none; }
-.lg button { font-family: inherit; }
-
-/* ---------- Skip link ---------- */
-.lg-skip {
-  position: absolute; top: -100px; left: 12px; z-index: 9999;
-  padding: 12px 18px; background: var(--brand); color: #fff !important;
-  font-weight: 600; font-size: 14px;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 10px 24px -10px rgba(0,0,0,.35);
-  transition: top .18s ease;
-}
-.lg-skip:focus { top: 0; outline: 3px solid #fff; outline-offset: 2px; }
-
-/* ---------- Foco visível ---------- */
-.lg a:focus-visible,
-.lg button:focus-visible,
-.lg input:focus-visible {
-  outline: 3px solid var(--brand-2);
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-.lg-btn-primary:focus-visible {
-  outline: 3px solid #fff;
-  outline-offset: 3px;
-  box-shadow: 0 0 0 6px rgba(37,99,235,.55);
-}
-
-/* ---------- Layout base ---------- */
-.lg-wrap {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-/* ---------- Painel esquerdo (marca) ---------- */
-.lg-brand {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(145deg, var(--brand-3) 0%, var(--brand) 55%, #3b82f6 100%);
-  color: #fff;
-  padding: 48px 56px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 40px;
-}
-.lg-brand::before {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(700px 400px at 90% 10%, rgba(59,130,246,.28), transparent 60%),
-    radial-gradient(500px 300px at 10% 90%, rgba(255,255,255,.08), transparent 60%);
-  pointer-events: none;
-}
-.lg-brand > * { position: relative; }
-
-.lg-brand-top { display: flex; flex-direction: column; }
-.lg-brand-logo {
-  display: inline-flex; align-items: center; gap: 12px;
-  color: #fff; font-weight: 700; font-size: 20px; letter-spacing: -.02em;
-  width: fit-content;
-  margin-bottom: 48px;
-}
-.lg-brand-logo-mark {
-  width: 44px; height: 44px; border-radius: 12px;
-  display: grid; place-items: center; font-size: 22px;
-  background: rgba(255,255,255,.12);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
-  backdrop-filter: blur(6px);
-}
-.lg-brand-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 14px; border-radius: 999px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
-  font-size: 12px; font-weight: 600;
-  color: #dbeafe;
-  margin-bottom: 20px;
-  width: fit-content;
-  backdrop-filter: blur(6px);
-}
-.lg-brand-badge-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96,165,250,.28);
-}
-.lg-brand-title {
-  font-size: clamp(28px, 3.4vw, 40px);
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -.03em;
-  color: #ffffff;
-  margin-bottom: 18px;
-  max-width: 480px;
-}
-.lg-brand-title em {
-  font-style: normal;
-  background: linear-gradient(120deg, #bfdbfe, #60a5fa);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.lg-brand-sub {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #dbeafe;
-  max-width: 440px;
-  margin-bottom: 32px;
-}
-.lg-brand-list {
-  list-style: none; padding: 0; margin: 0;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.lg-brand-item {
-  display: flex; align-items: center; gap: 12px;
-  font-size: 14.5px; color: #dbeafe; font-weight: 500;
-}
-.lg-brand-check {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: inline-grid; place-items: center;
-  background: rgba(96,165,250,.18);
-  border: 1px solid rgba(96,165,250,.35);
-  color: #bfdbfe;
-  font-size: 11px; font-weight: 800;
-  flex-shrink: 0;
-}
-.lg-brand-footer {
-  font-size: 12.5px; color: #bfdbfe;
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-.lg-brand-footer-dot { width: 4px; height: 4px; border-radius: 50%; background: #60a5fa; }
-
-/* ---------- Painel direito (formulário) ---------- */
-.lg-form-side {
-  display: flex; align-items: center; justify-content: center;
-  padding: 48px 32px;
-  background:
-    radial-gradient(600px 400px at 100% 0%, rgba(59,130,246,.06), transparent 60%),
-    var(--bg-soft);
-}
-.lg-card {
-  width: 100%;
-  max-width: 420px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 40px 36px;
-  box-shadow:
-    0 1px 2px rgba(15,23,42,.04),
-    0 20px 50px -25px rgba(15,23,42,.22);
-}
-.lg-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -.025em;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-.lg-sub {
-  font-size: 14.5px;
-  color: var(--muted);
-  margin-bottom: 28px;
-}
-
-/* ---------- Alerta de erro ---------- */
-.lg-alert {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 12px 14px;
-  background: var(--danger-bg);
-  border: 1px solid var(--danger-line);
-  border-radius: 12px;
-  color: var(--danger-ink);
-  font-size: 13.5px;
-  line-height: 1.5;
-  margin-bottom: 22px;
-  animation: lgShake .35s ease;
-}
-.lg-alert-icon {
-  flex-shrink: 0;
-  width: 20px; height: 20px; border-radius: 50%;
-  display: inline-grid; place-items: center;
-  background: #fee2e2; color: var(--danger-ink);
-  font-size: 12px; font-weight: 800;
-}
-@keyframes lgShake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lg-alert { animation: none; }
-  .lg-spinner { animation-duration: 1.4s !important; }
-}
-
-/* ---------- Campos ---------- */
-.lg-form { display: flex; flex-direction: column; gap: 18px; }
-.lg-field { display: flex; flex-direction: column; gap: 8px; }
-.lg-label-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.lg-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.lg-forgot {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--brand);
-  transition: color .15s;
-}
-.lg-forgot:hover { color: var(--brand-3); text-decoration: underline; text-underline-offset: 3px; }
-
-.lg-input-wrap { position: relative; }
-.lg-input {
-  width: 100%;
-  padding: 13px 52px 13px 14px; /* espaço à direita para o ícone do olho */
-  font-size: 16px; /* evita zoom automático no iOS */
-  font-family: inherit;
-  color: var(--ink);
-  background: #fff;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px;
-  transition: border-color .15s, box-shadow .15s, background .15s;
-}
-
-/* Esconde o botão nativo de revelar senha (Edge/IE) — evita duplicação */
-.lg-input::-ms-reveal,
-.lg-input::-ms-clear {
-  display: none;
-}
-/* Esconde o botão nativo de limpar do WebKit */
-.lg-input::-webkit-search-cancel-button {
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.lg-input::placeholder { color: #94a3b8; }
-.lg-input:hover { border-color: #94a3b8; }
-.lg-input:focus {
-  outline: none;
-  border-color: var(--brand);
-  box-shadow: 0 0 0 4px rgba(59,130,246,.15);
-}
-.lg-input.has-error { border-color: #dc2626; }
-.lg-input.has-error:focus { box-shadow: 0 0 0 4px rgba(220,38,38,.15); }
-.lg-input[aria-busy="true"] { opacity: .8; }
-
-/* ---------- Botão de revelar senha (SVG customizado) ---------- */
-.lg-input-icon {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
-  display: inline-grid;
-  place-items: center;
-  background: transparent;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--muted);
-  transition: background .15s, color .15s, transform .1s;
-}
-.lg-input-icon:hover {
-  background: var(--brand-soft);
-  color: var(--brand);
-}
-.lg-input-icon:active {
-  transform: translateY(-50%) scale(.94);
-}
-.lg-input-icon svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-  pointer-events: none;
-}
-
-/* ---------- Botão primário ---------- */
-.lg-btn-primary {
-  margin-top: 6px;
-  padding: 14px 20px;
-  background: var(--brand);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -.01em;
-  cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 12px 26px -12px rgba(37,99,235,.6);
-  transition: transform .15s ease, box-shadow .2s ease, background .15s ease;
-}
-.lg-btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  background: var(--brand-3);
-  box-shadow: 0 16px 32px -14px rgba(37,99,235,.7);
-}
-.lg-btn-primary:active:not(:disabled) { transform: translateY(0); }
-.lg-btn-primary:disabled {
-  opacity: .75;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-.lg-spinner {
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.4);
-  border-top-color: #fff;
-  animation: lgSpin .7s linear infinite;
-}
-@keyframes lgSpin { to { transform: rotate(360deg); } }
-
-/* ---------- Rodapé ---------- */
-.lg-divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 26px 0 20px;
-  color: var(--muted); font-size: 12px;
-}
-.lg-divider::before,
-.lg-divider::after {
-  content: ""; height: 1px; flex: 1;
-  background: var(--line);
-}
-
-.lg-footer-text {
-  text-align: center;
-  font-size: 14px;
-  color: var(--muted);
-}
-.lg-footer-text a {
-  color: var(--brand);
-  font-weight: 700;
-  margin-left: 4px;
-}
-.lg-footer-text a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-.lg-legal {
-  margin-top: 26px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-/* ---------- Responsivo ---------- */
-@media (max-width: 960px) {
-  .lg-wrap { grid-template-columns: 1fr; }
-  .lg-brand {
-    padding: 28px 24px;
-    gap: 24px;
-    justify-content: flex-start;
-  }
-  .lg-brand-logo { margin-bottom: 20px; font-size: 18px; }
-  .lg-brand-logo-mark { width: 38px; height: 38px; font-size: 19px; }
-  .lg-brand-title { font-size: 26px; margin-bottom: 10px; }
-  .lg-brand-sub { font-size: 15px; margin-bottom: 16px; }
-  .lg-brand-list { gap: 10px; }
-  .lg-brand-item { font-size: 14px; }
-  .lg-brand-footer { display: none; }
-  .lg-form-side { padding: 32px 20px 48px; }
-}
-@media (max-width: 600px) {
-  .lg-brand { padding: 24px 20px; }
-  .lg-brand-badge { font-size: 11px; padding: 5px 11px; margin-bottom: 14px; }
-  .lg-brand-title { font-size: 22px; }
-  .lg-brand-sub { font-size: 14px; }
-  .lg-brand-list { display: none; } /* deixa a marca enxuta no mobile */
-  .lg-card {
-    padding: 28px 22px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px -18px rgba(15,23,42,.22);
-  }
-  .lg-title { font-size: 22px; }
-  .lg-sub { font-size: 14px; margin-bottom: 22px; }
-}
-`;
 
 /* ============================================================
    Componente
@@ -462,7 +61,7 @@ export default function Login() {
 
   return (
     <>
-      <style>{STYLES}</style>
+      <style>{STYLES}{PUBLIC_STYLES}</style>
       <div className="lg">
         <a href="#lg-main" className="lg-skip">Ir para o formulário</a>
 
@@ -471,8 +70,8 @@ export default function Login() {
           <aside className="lg-brand" aria-label="Sobre o CtOperacional">
             <div className="lg-brand-top">
               <Link to="/" className="lg-brand-logo" aria-label="CtOperacional — início">
-                <span className="lg-brand-logo-mark" aria-hidden="true">📋</span>
-                <span>CtOperacional</span>
+                <span className="lg-brand-logo-mark" aria-hidden="true"><img src="/favicon.svg" alt="" /></span>
+                <span><b>Ct</b>Operacional</span>
               </Link>
 
               <span className="lg-brand-badge">
@@ -495,7 +94,7 @@ export default function Login() {
                   'Atalhos e busca rápida (Ctrl+K)',
                 ].map((item) => (
                   <li key={item} className="lg-brand-item">
-                    <span className="lg-brand-check" aria-hidden="true">✓</span>
+                    <span className="lg-brand-check" aria-hidden="true"><Icon name="check" size={15} /></span>
                     {item}
                   </li>
                 ))}
@@ -622,7 +221,7 @@ export default function Login() {
                   ) : (
                     <>
                       Entrar
-                      <span aria-hidden="true">→</span>
+                      <Icon name="arrow" size={18} />
                     </>
                   )}
                 </button>

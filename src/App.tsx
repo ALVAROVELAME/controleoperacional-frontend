@@ -2,15 +2,18 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
+import { lazy, Suspense } from 'react';
+import CarregandoSessao from './components/CarregandoSessao';
 import Status from './pages/Status';
 import ConfirmarEmail from './pages/ConfirmarEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthProvider';
 import RotaProtegida from './components/RotaProtegida';
 import RotaPublica from './components/RotaPublica';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 export default function App() {
   return (
@@ -59,7 +62,7 @@ export default function App() {
             path="/dashboard"
             element={
               <RotaProtegida>
-                <Dashboard />
+                <Suspense fallback={<CarregandoSessao />}><Dashboard /></Suspense>
               </RotaProtegida>
             }
           />

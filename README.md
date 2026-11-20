@@ -6,13 +6,13 @@
 
 Organize tarefas, acompanhe o fluxo de trabalho e mantenha sua equipe alinhada com um quadro Kanban moderno — com Pomodoro integrado.
 
-[![Vercel](https://img.shields.io/badge/deploy-vercel-000?logo=vercel&logoColor=white)](https://ctoperacional.vercel.app)
+[![Vercel](https://img.shields.io/badge/deploy-vercel-000?logo=vercel&logoColor=white)](https://controle-operacional.vercel.app)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev)
-[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-0284c7)](https://tailwindcss.com)
 
-[🌐 Ver online](https://ctoperacional.vercel.app) · [🐛 Reportar bug](https://github.com/seu-usuario/ctoperacional/issues) · [💡 Sugerir feature](https://github.com/seu-usuario/ctoperacional/issues)
+[🌐 Ver online](https://controle-operacional.vercel.app) · [🐛 Reportar bug](https://github.com/ALVAROVELAME/controleoperacional-frontend/issues) · [💡 Sugerir feature](https://github.com/ALVAROVELAME/controleoperacional-frontend/issues)
 
 </div>
 
@@ -24,13 +24,13 @@ O **CtOperacional** é uma aplicação web de **controle operacional e gestão d
 
 ### Por que existe
 
-Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e "em que etapa". O CtOperacional centraliza tudo em um único quadro: colunas configuráveis, cards com prioridade, prazo, descrição e ciclos de foco (Pomodoro), com sincronização automática na nuvem.
+Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e "em que etapa". O CtOperacional centraliza tudo em um único quadro: quatro colunas, cards com prioridade, prazo, descrição e ciclos de foco (Pomodoro), com sincronização automática na nuvem.
 
 ### Diferenciais
 
-- ⚡ **Rápido** — Vite + React 19, carrega em menos de 1 segundo
-- 🌗 **Tema claro e escuro** — com contraste WCAG AAA verificado
-- ♿ **Acessível** — navegação por teclado, ARIA completo, `prefers-reduced-motion`
+- ⚡ **Rápido** — Vite + React 19, com carregamento do dashboard sob demanda
+- 🌗 **Tema claro e escuro** — com preferência salva no navegador
+- ♿ **Acessível** — navegação por teclado, atributos ARIA, `prefers-reduced-motion`
 - 📱 **Responsivo** — quadro com scroll horizontal, drawer mobile, KPIs em grade 2×2
 - 🎨 **Design System** próprio — variáveis CSS, sem dependências de UI
 - 🍅 **Pomodoro integrado** — timer acoplado às tarefas, com histórico diário
@@ -42,9 +42,9 @@ Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e 
 
 ### Autenticação
 
-- ✅ Cadastro com validação em tempo real (nome, e-mail, senha forte)
+- ✅ Cadastro com validação em tempo real (nome, e-mail, senha e confirmação)
 - ✅ Força da senha visual + checklist de requisitos (`aria-live`)
-- ✅ Login com "Esqueci minha senha" e revelação de senha via SVG
+- ✅ Login com controle de visibilidade da senha. O link “Esqueci minha senha” orienta o contato com o suporte; a redefinição automática por e-mail está pendente.
 - ✅ Confirmação de e-mail por token com **retry**, contagem regressiva e mensagens por status HTTP
 - ✅ Rota `/status` genérica para feedback visual reutilizável
 - ✅ Exclusão de conta com confirmação por senha
@@ -95,75 +95,36 @@ Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e 
 | Tecnologia | Versão | Uso |
 |---|---|---|
 | [React](https://react.dev) | 19 | UI |
-| [TypeScript](https://www.typescriptlang.org) | 5.9 | Tipagem estrita |
+| [TypeScript](https://www.typescriptlang.org) | 5.9 | Tipos de domínio e contratos da API |
 | [Vite](https://vite.dev) | 7 | Build e dev server |
 | [React Router](https://reactrouter.com) | 7 | Roteamento SPA |
 | [Axios](https://axios-http.com) | 1.x | Cliente HTTP |
 
-### Estilos
+### Estilos e qualidade
 
-- **CSS-in-TS** — blocos `<style>` escopados por componente
-- **Variáveis CSS** — tema claro/escuro via `data-theme` no `<html>`
-- **Zero dependências de UI** — sem Tailwind, MUI, Chakra, etc.
+O Vite compila o Tailwind CSS 4 com o plugin `@tailwindcss/vite`. O ponto de entrada é [src/index.css](./src/index.css), que importa o tema e os utilitários e mantém o reset próprio do projeto. As folhas em [src/styles](./src/styles) usam CSS e `@apply`. Os componentes importam essas folhas com `?inline` e aplicam os estilos quando a tela é renderizada.
 
-### Qualidade
-
-- [ESLint](https://eslint.org) 9 (flat config)
-- [typescript-eslint](https://typescript-eslint.io)
-- `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh`
-
----
+O ESLint 9 usa configuração plana com regras de TypeScript, React Hooks e Fast Refresh. A suíte usa Vitest, React Testing Library e jsdom com respostas HTTP simuladas pelo axios-mock-adapter.
 
 ## 📁 Estrutura do projeto
 
-```
-ctoperacional-frontend/
-├── public/                    # Assets estáticos (favicon)
-├── src/
-│   ├── components/            # Componentes reutilizáveis
-│   │   ├── LegalLayout.tsx    # Layout dos documentos legais
-│   │   ├── LogoutButton.tsx
-│   │   ├── Pomodoro.tsx       # usePomodoro + <Pomodoro> + <PomodoroMini>
-│   │   ├── RotaProtegida.tsx  # Guard de rotas autenticadas
-│   │   └── RotaPublica.tsx    # Guard de rotas públicas
-│   ├── contexts/
-│   │   ├── AuthContext.tsx    # Provider de autenticação
-│   │   ├── TarefasContext.tsx # Provider de tarefas + sync
-│   │   └── ToastContext.tsx   # Provider de notificações
-│   ├── pages/
-│   │   ├── Landing.tsx
-│   │   ├── Login.tsx
-│   │   ├── Signup.tsx
-│   │   ├── ForgotPassword.tsx
-│   │   ├── Dashboard.tsx      # Hub principal (4 abas)
-│   │   ├── ConfirmarEmail.tsx
-│   │   ├── Status.tsx         # StatusView + StatusPage
-│   │   ├── Termos.tsx
-│   │   └── Privacidade.tsx
-│   ├── services/
-│   │   ├── api.ts             # Axios + interceptors
-│   │   ├── auth.service.ts    # Login, cadastro, logout, exclusão
-│   │   ├── tarefas.service.ts # CRUD de tarefas
-│   │   └── pomodoro.service.ts# Registro de sessões de foco
-│   ├── types/
-│   │   ├── index.ts           # Tipos da API (DTOs)
-│   │   └── tarefa.ts          # Tipos de domínio + sanitização
-│   ├── App.tsx                # Configuração de rotas
-│   ├── index.css              # Design tokens globais
-│   └── main.tsx               # Entry point
-├── vercel.json                # SPA rewrites para deploy
-├── vite.config.ts
-├── tsconfig.json
-└── package.json
-```
-
----
+| Caminho | Responsabilidade |
+|---|---|
+| `public/` | Favicon, logotipo e imagem de compartilhamento |
+| `src/pages/`, `src/App.tsx` | Telas e rotas da aplicação |
+| `src/components/` | Componentes de interface, ícones e proteção de rotas |
+| `src/contexts/` | Contextos e providers separados para autenticação, tarefas e notificações |
+| `src/hooks/usePomodoro.ts` | Temporizador, persistência e transições de foco e pausa |
+| `src/services/` | Cliente HTTP em `http.ts` e serviços de autenticação, tarefas e Pomodoro |
+| `src/types/`, `src/mappers/` | Contratos da API, modelos de domínio e conversão das tarefas |
+| `src/styles/`, `src/index.css` | Estilos das telas, tokens e integração com Tailwind |
+| `tests/`, `vitest.config.ts` | Testes automatizados e configuração da suíte |
 
 ## 🚀 Como rodar localmente
 
 ### Pré-requisitos
 
-- **Node.js** ≥ 20
+- **Node.js** 24.x (compatível com o build e a suíte de testes)
 - **npm** ≥ 10 (ou `pnpm` / `yarn`)
 - **Git**
 
@@ -171,20 +132,22 @@ ctoperacional-frontend/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/ctoperacional.git
-cd ctoperacional-frontend
+git clone https://github.com/ALVAROVELAME/controleoperacional-frontend.git
+cd controleoperacional-frontend
 
 # 2. Instale as dependências
-npm install
+npm ci
 
 # 3. Configure as variáveis de ambiente (veja abaixo)
 cp .env.example .env
+# No PowerShell: Copy-Item .env.example .env
+# Edite VITE_API_URL com o endereço da sua API.
 
 # 4. Rode em modo desenvolvimento
 npm run dev
 ```
 
-A aplicação abre automaticamente em `http://localhost:5173`.
+Abra o endereço exibido pelo Vite no terminal (normalmente `http://localhost:5173`).
 
 ### Variáveis de ambiente
 
@@ -205,7 +168,12 @@ VITE_API_URL=https://api.example.invalid
 | `npm run dev` | Dev server com HMR em `localhost:5173` |
 | `npm run build` | Build de produção otimizado (saída em `dist/`) |
 | `npm run preview` | Preview do build local |
-| `npm run lint` | Verificação de lint em todo o código |
+| `npm run lint` | Verifica as regras do ESLint |
+| `npm test` | Executa toda a suíte uma vez |
+| `npm run test:watch` | Reexecuta testes durante a edição |
+| `npm run test:coverage` | Gera a cobertura V8 em `coverage/index.html` |
+
+Os testes verificam autenticação, redirecionamentos, formulários, confirmação de e-mail, tarefas, cache e Pomodoro. Os cenários implementados e os que ainda precisam de cobertura estão em [TESTES.md](./TESTES.md).
 
 ---
 
@@ -216,7 +184,7 @@ VITE_API_URL=https://api.example.invalid
 ```
 Usuário faz login
        ↓
-POST /api/auth/login  ← api.ts (axios instance)
+POST /api/auth/login  ← http.ts (axios instance)
        ↓
 AuthContext.login()   → salva token + usuário no localStorage
        ↓
@@ -229,7 +197,7 @@ RotaProtegida         → libera <Dashboard />
 
 **Request** — adiciona `Authorization: Bearer <token>` automaticamente.
 
-**Response** — em **401** (fora das rotas públicas de login/confirmação), limpa o `localStorage` e redireciona para `/login`. O **403** é preservado (pode ser apenas "sem permissão" para um recurso).
+**Response** — em **401** (fora das rotas públicas de login/confirmação), remove o token e o usuário se a resposta corresponder ao token atual e comunica a expiração ao contexto. O **403** é preservado (pode ser apenas "sem permissão" para um recurso).
 
 ### Sincronização de tarefas (otimista)
 
@@ -238,7 +206,7 @@ RotaProtegida         → libera <Dashboard />
 1. Aplica a mudança localmente (UI responde na hora).
 2. Chama a API em background.
 3. Se falhar, reverte o estado e mostra um toast de erro.
-4. Cache local em `localStorage` garante abertura instantânea em recargas.
+4. O cache em `localStorage` mantém a última lista de tarefas por conta.
 
 ### Persistência
 
@@ -256,86 +224,17 @@ RotaProtegida         → libera <Dashboard />
 | Componente | Comportamento |
 |---|---|
 | `<RotaPublica>` | Se autenticado → redireciona para `/dashboard` |
-| `<RotaProtegida>` | Se não autenticado → redireciona para `/login` com `state.from` |
+| `<RotaProtegida>` | Sem sessão ativa em `/dashboard`, volta à página institucional (`/`). Ao clicar em **Sair**, o usuário vai para `/login` |
 
 ---
 
 ## 🎨 Design System
 
-### Paleta (tema claro)
+A página institucional e os formulários públicos usam superfícies escuras, detalhes em azul e ciano e ícones SVG compartilhados. O dashboard oferece temas claro e escuro por meio de `data-theme`. Consulte [landing.css](./src/styles/landing.css) para os estilos da página inicial e [publicstyles.css](./src/styles/publicstyles.css) para o tema compartilhado das demais telas públicas.
 
-| Token | Hex | Uso |
-|---|---|---|
-| `--bg` | `#f6f8fb` | Fundo da página |
-| `--surface` | `#ffffff` | Cards, painéis |
-| `--ink` | `#0f172a` | Texto principal |
-| `--ink-soft` | `#334155` | Texto secundário |
-| `--muted` | `#5b6b82` | Texto terciário |
-| `--brand` | `#2563eb` | Marca, CTAs |
-| `--brand-2` | `#3b82f6` | Foco, gradientes |
-| `--danger` | `#dc2626` | Erros, ações destrutivas |
-| `--ok` | `#059669` | Sucesso |
-| `--warn` | `#b45309` | Alertas |
-| `--border` | `#e2e8f0` | Bordas |
+### Acessibilidade
 
-### Paleta (tema escuro)
-
-| Token | Hex |
-|---|---|
-| `--bg` | `#0b0f1a` |
-| `--surface` | `#111827` |
-| `--ink` | `#f1f5f9` |
-| `--ink-soft` | `#cbd5e1` |
-| `--muted` | `#9fb0c6` |
-| `--brand` | `#60a5fa` |
-| `--danger` | `#f87171` |
-| `--ok` | `#34d399` |
-
-### Tipografia
-
-- **Fonte:** `Inter` (fallback para system UI)
-- **Escala fluida:** `clamp()` para títulos
-- **Line-height:** 1.5 (corpo) / 1.1 (títulos)
-
-### Breakpoints
-
-| Breakpoint | Mudança principal |
-|---|---|
-| `≤1500px` | Painel de foco deixa de ser coluna lateral sticky |
-| `≤1100px` | Kanban vira grade 2×2 |
-| `≤1024px` | Sidebar → drawer mobile |
-| `≤720px` | Kanban em coluna única, tabela com scroll horizontal |
-| `≤480px` | KPIs em grade 2×2 |
-
----
-
-## ♿ Acessibilidade
-
-O projeto segue **WCAG 2.1 nível AA**, atingindo **AAA** em quase todos os textos.
-
-### Implementado
-
-- ✅ **Skip link** em todas as páginas
-- ✅ **`:focus-visible`** com anel adaptado a fundos claros e escuros
-- ✅ **Landmarks semânticos:** `<main>`, `<nav>`, `<header>`, `<aside>`, `<footer>`
-- ✅ **ARIA completo:** `aria-label`, `aria-current`, `aria-expanded`, `aria-pressed`, `aria-invalid`, `aria-describedby`, `aria-live`, `aria-busy`
-- ✅ **Focus trap** em modais, drawer e command palette
-- ✅ **Navegação por teclado** em 100% dos elementos interativos
-- ✅ **`role="alert"`** para erros, `role="status"` para feedback
-- ✅ **Emojis decorativos** com `aria-hidden="true"`
-- ✅ **`prefers-reduced-motion`** desativa animações
-- ✅ **Contraste verificado** — todos os textos ≥ 7:1 (AAA)
-- ✅ **Tabelas semânticas** com `scope`, `aria-label` e `sr-only`
-- ✅ **`sr-only`** para conteúdo apenas para leitores de tela
-
-### Testado em
-
-- NVDA (Windows)
-- VoiceOver (macOS / iOS)
-- Navegação apenas por teclado
-- Zoom 200%
-
----
+As telas incluem navegação por teclado, foco visível, mensagens de erro com `role="alert"` e feedback com `role="status"`. As folhas de estilo incluem adaptações para movimento reduzido e impressão dos documentos legais.
 
 ## 🌐 API consumida
 
@@ -347,7 +246,7 @@ O projeto segue **WCAG 2.1 nível AA**, atingindo **AAA** em quase todos os text
 | `GET` | `/api/auth/me` | Usuário logado |
 | `GET` | `/api/auth/confirmar?token=...` | Confirmação de e-mail |
 | `POST` | `/api/usuarios` | Cadastro |
-| `DELETE` | `/api/usuarios/me` | Exclusão de conta (requer senha) |
+| `POST` | `/api/usuarios/me/excluir` | Exclusão de conta (requer senha) |
 
 ### Tarefas
 
@@ -366,11 +265,9 @@ O projeto segue **WCAG 2.1 nível AA**, atingindo **AAA** em quase todos os text
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| `POST` | `/api/pomodoros/sessoes` | Registra uma sessão de foco concluída |
+| `POST` | `/api/pomodoros/eventos` | Registra eventos de foco e pausa |
 
-> **Tipos** são mapeados entre UI (`"em_progresso"`, `"media"`) e API (`"EmProgresso"`, `"Media"`) automaticamente pelo `tarefas.service.ts` e pelo `sanitizar()` em `types/tarefa.ts`.
-
----
+O [mapper de tarefas](./src/mappers/tarefa.mapper.ts) normaliza respostas com enums numéricos ou textuais e monta os dados enviados na criação e na edição.
 
 ## 🚢 Deploy
 
@@ -407,7 +304,7 @@ O projeto inclui um `vercel.json` que configura **SPA rewrites** para o React Ro
 
 ### Concluído ✅
 
-- [x] Autenticação (login, cadastro, confirmação de e-mail, recuperação de senha)
+- [x] Autenticação (login, cadastro e confirmação de e-mail)
 - [x] Dashboard com 4 abas (Quadro, Lista, Relatórios, Configurações)
 - [x] Kanban com drag & drop e criação inline
 - [x] Filtros por busca, status e prioridade
@@ -417,7 +314,7 @@ O projeto inclui um `vercel.json` que configura **SPA rewrites** para o React Ro
 - [x] Exportação / importação JSON
 - [x] Páginas legais (Termos + Privacidade LGPD)
 - [x] Exclusão de conta com confirmação por senha
-- [x] Acessibilidade WCAG AA/AAA
+- [x] Integração do Tailwind CSS e suíte automatizada com Vitest
 
 ### Em planejamento 📋
 
@@ -455,23 +352,19 @@ Contribuições são bem-vindas! Por favor:
 
 - **TypeScript estrito** — sem `any` (exceto onde inevitável e comentado)
 - **Componentes funcionais** + hooks
-- **CSS-in-TS** escopado por componente
+- **Tailwind CSS e folhas por tela** em `src/styles/`
 - **Acessibilidade não é opcional** — toda feature nova precisa passar em teclado
 - **Commits atômicos** com mensagens descritivas
 
 ---
 
-## 📄 Licença
 
-Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
-
----
 
 ## 📞 Contato
 
 | Canal | |
 |---|---|
-| 🌐 **Site** | [ctoperacional.vercel.app](https://ctoperacional.vercel.app) |
+| 🌐 **Site** | [controle-operacional.vercel.app](https://controle-operacional.vercel.app) |
 | 📧 **Suporte** | contato@ctoperacional.app |
 | ⚖️ **Jurídico** | juridico@ctoperacional.app |
 | 🔒 **DPO (LGPD)** | dpo@ctoperacional.app |

@@ -1,16 +1,8 @@
-// src/contexts/ToastContext.tsx
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { uid } from '../types/domain';
 import type { Toast, ToastTipo } from '../types/domain';
-
-type ToastCtx = {
-  toasts: Toast[];
-  push: (texto: string, tipo?: ToastTipo, acao?: Toast['acao']) => void;
-  remover: (id: string) => void;
-};
-
-const Ctx = createContext<ToastCtx | null>(null);
+import { Ctx } from './ToastContext';
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -30,10 +22,4 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ toasts, push, remover }), [toasts, push, remover]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-}
-
-export function useToast() {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useToast precisa estar dentro de <ToastProvider>');
-  return ctx;
 }

@@ -1,19 +1,17 @@
-// src/contexts/TarefasContext.tsx
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import axios from 'axios';
-import { useAuth } from './AuthContext';
-import { useToast } from './ToastContext';
 import { tarefasService } from '../services/tarefas.service';
 import { mensagemDeErro } from '../services/http';
 import { sanitizarTarefa } from '../mappers/tarefa.mapper';
 import type { StatusColuna, Tarefa } from '../types/domain';
+import { useAuth } from './AuthContext';
+import { useToast } from './ToastContext';
+import { LEGADO_KEY, cacheKey } from './tarefasCache';
+import { Ctx, type EstadoSync, type TarefasCtx } from './TarefasContext';
 
 /** Payload de criar/editar — id e criadoEm são do servidor. */
 type TarefaInput = Omit<Tarefa, 'id' | 'criadoEm'>;
-
-const LEGADO_KEY = 'ctoperacional:tarefas';
-const cacheKey = (dono: string) => `ctoperacional:cache:${dono}`;
 
 /** Converte uma Tarefa completa em payload de input (para restaurar/importar). */
 const paraInput = (t: Tarefa): TarefaInput => ({
@@ -37,33 +35,6 @@ const lerLista = (key: string): Tarefa[] => {
     return [];
   }
 };
-
-export const limparCacheTarefas = (dono = 'anon') => {
-  try {
-    localStorage.removeItem(cacheKey(dono));
-    localStorage.removeItem(LEGADO_KEY);
-  } catch {
-    /* ignore */
-  }
-};
-
-export type EstadoSync = 'carregando' | 'pronto' | 'offline';
-
-type TarefasCtx = {
-  tarefas: Tarefa[];
-  estado: EstadoSync;
-  sincronizando: boolean;
-  recarregar: () => void;
-  salvar: (dados: TarefaInput, id?: string) => Promise<Tarefa | null>;
-  excluir: (id: string) => Promise<Tarefa | null>;
-  restaurar: (t: Tarefa) => Promise<Tarefa | null>;
-  mover: (id: string, status: StatusColuna) => Promise<boolean>;
-  registrarPomodoro: (id: string) => Promise<void>;
-  importar: (itens: TarefaInput[]) => Promise<number | null>;
-  zerar: () => Promise<boolean>;
-};
-
-const Ctx = createContext<TarefasCtx | null>(null);
 
 export function TarefasProvider({ children }: { children: ReactNode }) {
   const { usuario } = useAuth();
@@ -275,10 +246,4 @@ export function TarefasProvider({ children }: { children: ReactNode }) {
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-}
-
-export function useTarefas() {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useTarefas precisa estar dentro de <TarefasProvider>');
-  return ctx;
 }
