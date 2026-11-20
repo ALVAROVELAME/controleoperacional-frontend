@@ -138,11 +138,21 @@ cd controleoperacional-frontend
 # 2. Instale as dependências
 npm ci
 
-# 3. Rode em modo desenvolvimento
+# 3. Crie sua configuração local a partir do exemplo
+cp .env.example .env
+
+# No PowerShell
+# Copy-Item .env.example .env
+
+# 4. Edite o arquivo .env e informe a URL da sua própria API
+
+# 5. Rode em modo desenvolvimento
 npm run dev
 ```
 
 Abra o endereço exibido pelo Vite no terminal (normalmente `http://localhost:5173`).
+
+O arquivo `.env` fica somente no computador de quem executa o projeto e está ignorado pelo Git. Use o `.env.example` como modelo e preencha a URL da API do seu ambiente.
 
 ---
 

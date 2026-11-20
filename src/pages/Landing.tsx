@@ -5,7 +5,6 @@ import { Icon } from '../components/LandingIcons';
 import type { IconName } from '../components/LandingIcons';
 
 const LINKS = {
-  api: 'https://api.example.invalid/swagger/index.html',
   portfolio: 'https://alvarovelame.vercel.app',
   github: 'https://github.com/ALVAROVELAME',
   linkedin: 'https://www.linkedin.com/in/alvaro-velame/',
@@ -367,8 +366,8 @@ export default function Landing() {
                 ))}
               </div>
               <div className="ag-cta-row" data-r>
-                <a href={LINKS.api} target="_blank" rel="noopener noreferrer" className="ag-btn ag-btn-p ag-btn-lg" data-mag>
-                  <Icon name="api" size={18} /> Ver API no Swagger<span className="sr-only"> (abre em nova aba)</span>
+                <a href="#arquitetura" className="ag-btn ag-btn-p ag-btn-lg" data-mag>
+                  <Icon name="api" size={18} /> Conhecer a arquitetura
                 </a>
                 <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="ag-btn ag-btn-o ag-btn-lg" data-mag>
                   <Icon name="github" size={18} /> Código no GitHub<span className="sr-only"> (abre em nova aba)</span>
@@ -442,7 +441,7 @@ export default function Landing() {
             </nav>
             <nav className="ag-fc" aria-label="Desenvolvedor">
               <h4 className="ag-fh">Desenvolvedor</h4>
-              <a href={LINKS.api} target="_blank" rel="noopener noreferrer" className="ag-fl"><Icon name="api" size={16} />API (Swagger)</a>
+              <a href="#arquitetura" className="ag-fl"><Icon name="api" size={16} />Arquitetura</a>
               <a href={LINKS.portfolio} target="_blank" rel="noopener noreferrer" className="ag-fl"><Icon name="globe" size={16} />Portfólio</a>
               <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="ag-fl"><Icon name="github" size={16} />GitHub</a>
               <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="ag-fl"><Icon name="linkedin" size={16} />LinkedIn</a>
