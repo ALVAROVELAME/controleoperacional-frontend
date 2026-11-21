@@ -1,0 +1,62 @@
+.carregamento {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.carregamento-conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.carregamento-marca {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 20px;
+}
+
+.carregamento-marca img {
+  width: 42px;
+  height: 42px;
+}
+
+.carregamento-anel {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #dbeafe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: carregamento-girar 1s linear infinite;
+}
+
+.carregamento-nome {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+
+.carregamento-nome b { color: #2563eb; }
+
+.carregamento-texto {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+@keyframes carregamento-girar {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carregamento-anel { animation: none; }
+}
