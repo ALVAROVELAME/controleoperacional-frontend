@@ -39,6 +39,16 @@ export const authService = {
     return data;
   },
 
+  async recuperarSenha(email: string): Promise<MensagemResponse> {
+    const { data } = await http.post<MensagemResponse>('/api/auth/recuperar-senha', { email });
+    return data;
+  },
+
+  async redefinirSenha(token: string, senha: string): Promise<MensagemResponse> {
+    const { data } = await http.post<MensagemResponse>('/api/auth/redefinir-senha', { token, senha });
+    return data;
+  },
+
   async confirmarEmail(token: string, signal?: AbortSignal): Promise<MensagemResponse> {
     const { data } = await http.get<MensagemResponse>('/api/auth/confirmar', {
       params: { token },

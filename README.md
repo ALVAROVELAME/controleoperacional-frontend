@@ -44,7 +44,7 @@ Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e 
 
 - ✅ Cadastro com validação em tempo real (nome, e-mail, senha e confirmação)
 - ✅ Força da senha visual + checklist de requisitos (`aria-live`)
-- ✅ Login com controle de visibilidade da senha. O link “Esqueci minha senha” orienta o contato com o suporte; a redefinição automática por e-mail está pendente.
+- ✅ Login com controle de visibilidade da senha. O link “Esqueci minha senha” permite solicitar a redefinição por e-mail.
 - ✅ Confirmação de e-mail por token com **retry**, contagem regressiva e mensagens por status HTTP
 - ✅ Rota `/status` genérica para feedback visual reutilizável
 - ✅ Exclusão de conta com confirmação por senha
