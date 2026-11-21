@@ -1,8 +1,8 @@
 import CarregandoSessao from './CarregandoSessao';
-// src/components/RotaPublica.tsx
+// src/components/auth/RotaPublica.tsx
 import { Navigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * Rota para quem NÃO está logado (Landing, Login, Signup).

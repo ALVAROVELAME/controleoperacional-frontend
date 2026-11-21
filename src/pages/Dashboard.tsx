@@ -17,7 +17,7 @@ import type {
   ReactNode,
   RefObject,
 } from 'react';
-import LogoutButton from '../components/LogoutButton';
+import LogoutButton from '../components/auth/LogoutButton';
 import { useAuth } from '../contexts/AuthContext';
 import { ToastProvider } from '../contexts/ToastProvider';
 import { useToast } from '../contexts/ToastContext';

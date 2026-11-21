@@ -1,18 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Login from './pages/auth/Login';
+import Signup from './pages/auth/Signup';
 import { lazy, Suspense } from 'react';
-import CarregandoSessao from './components/CarregandoSessao';
+import CarregandoSessao from './components/auth/CarregandoSessao';
 import Status from './pages/Status';
-import ConfirmarEmail from './pages/ConfirmarEmail';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Termos from './pages/Termos';
-import Privacidade from './pages/Privacidade';
+import ConfirmarEmail from './pages/auth/ConfirmarEmail';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
+import Termos from './pages/legal/Termos';
+import Privacidade from './pages/legal/Privacidade';
 import { AuthProvider } from './contexts/AuthProvider';
-import RotaProtegida from './components/RotaProtegida';
-import RotaPublica from './components/RotaPublica';
+import RotaProtegida from './components/auth/RotaProtegida';
+import RotaPublica from './components/auth/RotaPublica';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 

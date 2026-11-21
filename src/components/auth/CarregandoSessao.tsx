@@ -1,4 +1,4 @@
-import '../styles/carregamento.css';
+import '../../styles/auth/carregamento.css';
 
 export default function CarregandoSessao() {
   return (

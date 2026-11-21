@@ -1,11 +1,11 @@
-import STYLES from '../styles/signup.css?inline';
-import { Icon } from '../components/LandingIcons';
-import PUBLIC_STYLES from '../styles/publicstyles.css?inline';
+import STYLES from '../../styles/auth/signup.css?inline';
+import { Icon } from '../../components/icons/LandingIcons';
+import PUBLIC_STYLES from '../../styles/publicstyles.css?inline';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { authService } from '../services/auth.service';
-import PasswordStrength from '../components/PasswordStrength';
-import EyeIcon from '../components/EyeIcon';
+import { authService } from '../../services/auth.service';
+import PasswordStrength from '../../components/auth/PasswordStrength';
+import EyeIcon from '../../components/icons/EyeIcon';
 
 // ============================================================
 // Regras de validação

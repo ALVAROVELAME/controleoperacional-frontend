@@ -3,12 +3,12 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { AuthProvider } from '../src/contexts/AuthProvider';
-import RotaPublica from '../src/components/RotaPublica';
-import RotaProtegida from '../src/components/RotaProtegida';
-import Login from '../src/pages/Login';
-import Signup from '../src/pages/Signup';
-import { http } from '../src/services/http';
+import { AuthProvider } from '../../src/contexts/AuthProvider';
+import RotaPublica from '../../src/components/auth/RotaPublica';
+import RotaProtegida from '../../src/components/auth/RotaProtegida';
+import Login from '../../src/pages/auth/Login';
+import Signup from '../../src/pages/auth/Signup';
+import { http } from '../../src/services/http';
 
 let api: MockAdapter;
 beforeEach(() => { api = new MockAdapter(http); });

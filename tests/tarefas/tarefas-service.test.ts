@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import MockAdapter from 'axios-mock-adapter';
-import { http } from '../src/services/http';
-import { tarefasService } from '../src/services/tarefas.service';
+import { http } from '../../src/services/http';
+import { tarefasService } from '../../src/services/tarefas.service';
 const input = { titulo: 'Planejar', prioridade: 'media' as const, status: 'a_fazer' as const };
 const resposta = { ...input, id: '1', criadoEm: '2026-01-01' };
 let api: MockAdapter;

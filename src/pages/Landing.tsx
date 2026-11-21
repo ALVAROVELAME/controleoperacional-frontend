@@ -1,8 +1,8 @@
 import STYLES from '../styles/landing.css?inline';
 import { useState, useEffect, useRef, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon } from '../components/LandingIcons';
-import type { IconName } from '../components/LandingIcons';
+import { Icon } from '../components/icons/LandingIcons';
+import type { IconName } from '../components/icons/LandingIcons';
 
 const LINKS = {
   portfolio: 'https://alvarovelame.vercel.app',
@@ -173,8 +173,8 @@ export default function Landing() {
   const tilt = (e: MouseEvent<HTMLDivElement>) => {
     if (reduced() || !finePointer() || !stage.current) return;
     const r = e.currentTarget.getBoundingClientRect();
-    stage.current.style.setProperty('--ry', `${-6 + ((e.clientX - r.left) / r.width - 0.5) * 6}deg`);
-    stage.current.style.setProperty('--rx', `${3 - ((e.clientY - r.top) / r.height - 0.5) * 6}deg`);
+    stage.current.style.setProperty('--ry', `${-6 + ((e.clientX - r.left) / r.width - 0.5) * 16}deg`);
+    stage.current.style.setProperty('--rx', `${4 - ((e.clientY - r.top) / r.height - 0.5) * 12}deg`);
   };
   const untilt = () => {
     if (!stage.current) return;

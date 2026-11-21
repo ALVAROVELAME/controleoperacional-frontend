@@ -1,5 +1,5 @@
-// src/components/LogoutButton.tsx
-import { useAuth } from '../contexts/AuthContext';
+// src/components/auth/LogoutButton.tsx
+import { useAuth } from '../../contexts/AuthContext';
 import type { CSSProperties } from 'react';
 
 interface Props {

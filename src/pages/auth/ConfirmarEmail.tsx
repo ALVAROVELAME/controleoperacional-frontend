@@ -1,8 +1,8 @@
-// src/pages/ConfirmarEmail.tsx
+// src/pages/auth/ConfirmarEmail.tsx
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { authService } from '../services/auth.service';
-import { StatusView, type StatusOpcoes } from './Status';
+import { authService } from '../../services/auth.service';
+import { StatusView, type StatusOpcoes } from '../Status';
 
 /* ============================================================
    Mensagens por status HTTP

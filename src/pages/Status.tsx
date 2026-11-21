@@ -1,5 +1,5 @@
 import STYLES from '../styles/status.css?inline';
-import { Icon } from '../components/LandingIcons';
+import { Icon } from '../components/icons/LandingIcons';
 import PUBLIC_STYLES from '../styles/publicstyles.css?inline';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

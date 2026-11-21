@@ -1,13 +1,13 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
-import { ToastProvider } from '../src/contexts/ToastProvider';
-import { TarefasProvider } from '../src/contexts/TarefasProvider';
-import { useTarefas } from '../src/contexts/TarefasContext';
-import { tarefasService } from '../src/services/tarefas.service';
+import { ToastProvider } from '../../src/contexts/ToastProvider';
+import { TarefasProvider } from '../../src/contexts/TarefasProvider';
+import { useTarefas } from '../../src/contexts/TarefasContext';
+import { tarefasService } from '../../src/services/tarefas.service';
 
-vi.mock('../src/contexts/AuthContext', () => ({ useAuth: () => ({ usuario: { email: 'ana@teste.com' } }) }));
-vi.mock('../src/services/tarefas.service', () => ({ tarefasService: { listar: vi.fn(), criar: vi.fn(), atualizar: vi.fn(), excluir: vi.fn(), mudarStatus: vi.fn(), registrarPomodoro: vi.fn(), importar: vi.fn(), zerar: vi.fn() } }));
+vi.mock('../../src/contexts/AuthContext', () => ({ useAuth: () => ({ usuario: { email: 'ana@teste.com' } }) }));
+vi.mock('../../src/services/tarefas.service', () => ({ tarefasService: { listar: vi.fn(), criar: vi.fn(), atualizar: vi.fn(), excluir: vi.fn(), mudarStatus: vi.fn(), registrarPomodoro: vi.fn(), importar: vi.fn(), zerar: vi.fn() } }));
 const tarefa = { id: '1', titulo: 'Planejar', prioridade: 'media' as const, status: 'a_fazer' as const, criadoEm: '2026-01-01' };
 const wrapper = ({ children }: { children: ReactNode }) => <ToastProvider><TarefasProvider>{children}</TarefasProvider></ToastProvider>;
 beforeEach(() => { vi.clearAllMocks(); vi.mocked(tarefasService.listar).mockResolvedValue([tarefa]); });
@@ -39,5 +39,26 @@ describe('tarefas e sincronização', () => {
     const { result } = renderHook(() => useTarefas(), { wrapper });
     await waitFor(() => expect(result.current.estado).toBe('offline'));
     expect(result.current.tarefas[0].titulo).toBe('Planejar');
+  });
+  it('reverte o contador quando o registro de pomodoro falha', async () => {
+    vi.mocked(tarefasService.registrarPomodoro).mockRejectedValue(new Error('offline'));
+    const { result } = renderHook(() => useTarefas(), { wrapper });
+    await waitFor(() => expect(result.current.estado).toBe('pronto'));
+    await act(async () => { await result.current.registrarPomodoro('1'); });
+    expect(result.current.tarefas[0].pomodoros).toBeUndefined();
+  });
+  it('mantém tarefas existentes quando a limpeza falha', async () => {
+    vi.mocked(tarefasService.zerar).mockRejectedValue(new Error('offline'));
+    const { result } = renderHook(() => useTarefas(), { wrapper });
+    await waitFor(() => expect(result.current.estado).toBe('pronto'));
+    await act(async () => { expect(await result.current.zerar()).toBe(false); });
+    expect(result.current.tarefas).toEqual([tarefa]);
+  });
+  it('importa tarefas sem duplicar identificadores já carregados', async () => {
+    vi.mocked(tarefasService.importar).mockResolvedValue([tarefa, { ...tarefa, id: '2', titulo: 'Nova' }]);
+    const { result } = renderHook(() => useTarefas(), { wrapper });
+    await waitFor(() => expect(result.current.estado).toBe('pronto'));
+    await act(async () => { await result.current.importar([{ titulo: 'Nova', prioridade: 'media', status: 'a_fazer' }]); });
+    expect(result.current.tarefas.map(t => t.id)).toEqual(['1', '2']);
   });
 });

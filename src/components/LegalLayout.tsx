@@ -1,5 +1,5 @@
 import STYLES from '../styles/legallayout.css?inline';
-import { Icon } from './LandingIcons';
+import { Icon } from './icons/LandingIcons';
 import PUBLIC_STYLES from '../styles/publicstyles.css?inline';
 // src/components/LegalLayout.tsx
 import { useEffect, useState, type ReactNode } from 'react';

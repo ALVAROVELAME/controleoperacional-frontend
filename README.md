@@ -24,7 +24,7 @@ O **CtOperacional** é uma aplicação web de **controle operacional e gestão d
 
 ### Por que existe
 
-Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e "em que etapa". O CtOperacional centraliza tudo em um único quadro: quatro colunas, cards com prioridade, prazo, descrição e ciclos de foco (Pomodoro), com sincronização automática na nuvem.
+O CtOperacional reúne tarefas em um quadro com quatro colunas. Cada tarefa pode ter prioridade, prazo, descrição e ciclos de foco; os dados são sincronizados com a API configurada para a conta.
 
 ### Diferenciais
 
@@ -34,7 +34,7 @@ Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e 
 - 📱 **Responsivo** — quadro com scroll horizontal, drawer mobile, KPIs em grade 2×2
 - 🎨 **Design System** próprio — variáveis CSS, sem dependências de UI
 - 🍅 **Pomodoro integrado** — timer acoplado às tarefas, com histórico diário
-- 🔒 **Seguro** — JWT com interceptor de 401, senha em hash no backend
+- 🔒 **Sessão autenticada** — token JWT enviado à API e tratamento de expiração de sessão
 
 ---
 
@@ -81,7 +81,7 @@ Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e 
 ### Documentos legais
 
 - 📄 **Termos de Uso** — 11 seções
-- 🔐 **Política de Privacidade** — 12 seções, em conformidade com a **LGPD**
+- 🔐 **Política de Privacidade** — informações sobre tratamento de dados e direitos dos usuários
 - 📑 **Índice lateral fixo** com seção ativa detectada via `IntersectionObserver`
 - 📊 **Barra de progresso de leitura** no topo
 - ⬆️ Botão "Voltar ao topo" com fade
@@ -102,7 +102,7 @@ Equipes perdem tempo tentando descobrir "o que está sendo feito", "por quem" e 
 
 ### Estilos e qualidade
 
-O Vite compila o Tailwind CSS 4 com o plugin `@tailwindcss/vite`. O ponto de entrada é [src/index.css](./src/index.css), que importa o tema e os utilitários e mantém o reset próprio do projeto. As folhas em [src/styles](./src/styles) usam CSS e `@apply`. Os componentes importam essas folhas com `?inline` e aplicam os estilos quando a tela é renderizada.
+O Vite compila o Tailwind CSS 4 com o plugin `@tailwindcss/vite`. O ponto de entrada é [src/index.css](./src/index.css), que importa o tema e os utilitários e mantém o reset próprio do projeto. A migração de CSS para Tailwind está em andamento: há utilitários nos componentes e folhas em [src/styles](./src/styles) que combinam CSS e `@apply`. Algumas telas carregam estilos com `?inline`; outras usam imports CSS comuns.
 
 O ESLint 9 usa configuração plana com regras de TypeScript, React Hooks e Fast Refresh. A suíte usa Vitest, React Testing Library e jsdom com respostas HTTP simuladas pelo axios-mock-adapter.
 
@@ -111,21 +111,21 @@ O ESLint 9 usa configuração plana com regras de TypeScript, React Hooks e Fast
 | Caminho | Responsabilidade |
 |---|---|
 | `public/` | Favicon, logotipo e imagem de compartilhamento |
-| `src/pages/`, `src/App.tsx` | Telas e rotas da aplicação |
-| `src/components/` | Componentes de interface, ícones e proteção de rotas |
+| `src/pages/`, `src/App.tsx` | Telas e rotas; `pages/auth/` reúne autenticação e `pages/legal/` os documentos legais |
+| `src/components/` | Componentes compartilhados; `auth/` reúne componentes de autenticação e `icons/` os ícones |
 | `src/contexts/` | Contextos e providers separados para autenticação, tarefas e notificações |
 | `src/hooks/usePomodoro.ts` | Temporizador, persistência e transições de foco e pausa |
 | `src/services/` | Cliente HTTP em `http.ts` e serviços de autenticação, tarefas e Pomodoro |
 | `src/types/`, `src/mappers/` | Contratos da API, modelos de domínio e conversão das tarefas |
-| `src/styles/`, `src/index.css` | Estilos das telas, tokens e integração com Tailwind |
-| `tests/`, `vitest.config.ts` | Testes automatizados e configuração da suíte |
+| `src/styles/`, `src/index.css` | Estilos das telas, incluindo `styles/auth/`, tokens e integração com Tailwind |
+| `tests/`, `vitest.config.ts` | Testes automatizados; `tests/auth/` e `tests/tarefas/` agrupam testes por domínio |
 
 ## 🚀 Como rodar localmente
 
 ### Pré-requisitos
 
 - **Node.js** 24.x (compatível com o build e a suíte de testes)
-- **npm** ≥ 10 (ou `pnpm` / `yarn`)
+- **npm** ≥ 10 (o projeto inclui `package-lock.json`)
 - **Git**
 
 ### Passo a passo
@@ -152,7 +152,7 @@ npm run dev
 
 Abra o endereço exibido pelo Vite no terminal (normalmente `http://localhost:5173`).
 
-O arquivo `.env` fica somente no computador de quem executa o projeto e está ignorado pelo Git. Use o `.env.example` como modelo e preencha a URL da API do seu ambiente.
+O arquivo `.env` é ignorado pelo Git. Defina `VITE_API_URL` com a URL base da API, sem o sufixo `/api` (por exemplo, `http://localhost:3000`). A variável é obrigatória: sem ela o cliente HTTP lança um erro. O frontend precisa de uma API compatível e acessível pelo navegador; configure CORS no backend para a origem do frontend. Variáveis `VITE_` são incluídas no código público do navegador e não devem conter segredos.
 
 ---
 
@@ -168,7 +168,7 @@ O arquivo `.env` fica somente no computador de quem executa o projeto e está ig
 | `npm run test:watch` | Reexecuta testes durante a edição |
 | `npm run test:coverage` | Gera a cobertura V8 em `coverage/index.html` |
 
-Os testes verificam autenticação, redirecionamentos, formulários, confirmação de e-mail, tarefas, cache e Pomodoro. Os cenários implementados e os que ainda precisam de cobertura estão em [TESTES.md](./TESTES.md).
+Os testes usam respostas simuladas e cobrem autenticação, formulários, tarefas, cache, Pomodoro e interações da página inicial. Na última execução, foram aprovados 40 testes, com 47,26% de cobertura de linhas; o dashboard e as páginas legais ainda não têm cobertura direta. A suíte em jsdom não valida layout, navegadores reais nem integração com a API implantada. Consulte [TESTES.md](./TESTES.md) e `coverage/index.html` após executar a cobertura.
 
 ---
 
@@ -196,12 +196,12 @@ RotaProtegida         → libera <Dashboard />
 
 ### Sincronização de tarefas (otimista)
 
-`TarefasContext` aplica **rollback automático** quando a API falha:
+O provider de tarefas usa atualização otimista para movimentação, exclusão e registro de Pomodoro:
 
 1. Aplica a mudança localmente (UI responde na hora).
 2. Chama a API em background.
 3. Se falhar, reverte o estado e mostra um toast de erro.
-4. O cache em `localStorage` mantém a última lista de tarefas por conta.
+4. O cache em `localStorage` mantém a última lista de tarefas por conta para leitura quando o carregamento falha. Não há fila de alterações offline.
 
 ### Persistência
 
@@ -213,6 +213,17 @@ RotaProtegida         → libera <Dashboard />
 | Cache de tarefas (por usuário) | `localStorage` | `ctoperacional:cache:<email>` |
 | Tarefas legadas (pré-API) | `localStorage` | `ctoperacional:tarefas` |
 | Estado do Pomodoro | `localStorage` | `ctoperacional:pomodoro` |
+
+### Rotas principais
+
+| Rota | Página |
+|---|---|
+| `/` | Página inicial |
+| `/login`, `/signup` | Acesso e cadastro |
+| `/forgot-password`, `/redefinir-senha` | Solicitação e redefinição de senha |
+| `/confirmar`, `/status` | Confirmação de e-mail e mensagens de status |
+| `/termos`, `/privacidade` | Documentos legais |
+| `/dashboard` | Área autenticada |
 
 ### Guards de rota
 
@@ -240,6 +251,8 @@ As telas incluem navegação por teclado, foco visível, mensagens de erro com `
 | `POST` | `/api/auth/login` | Autenticação |
 | `GET` | `/api/auth/me` | Usuário logado |
 | `GET` | `/api/auth/confirmar?token=...` | Confirmação de e-mail |
+| `POST` | `/api/auth/recuperar-senha` | Solicita recuperação de senha |
+| `POST` | `/api/auth/redefinir-senha` | Redefine a senha com token |
 | `POST` | `/api/usuarios` | Cadastro |
 | `POST` | `/api/usuarios/me/excluir` | Exclusão de conta (requer senha) |
 
@@ -281,8 +294,9 @@ O projeto inclui um `vercel.json` que configura **SPA rewrites** para o React Ro
 **Passos:**
 
 1. Importe o repositório no [Vercel](https://vercel.com/new)
-2. Configure o **Root Directory** para `ctoperacional-frontend` (se estiver em subpasta)
-3. Faça o deploy 🎉
+2. Configure o **Root Directory** para a pasta que contém `package.json`
+3. Configure `VITE_API_URL` com a URL pública da API no ambiente de deploy
+4. Faça o deploy e verifique o CORS da API para o domínio publicado
 
 ### Outras plataformas
 

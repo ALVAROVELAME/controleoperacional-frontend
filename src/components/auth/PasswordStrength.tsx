@@ -1,4 +1,4 @@
-import '../styles/password-strength.css';
+import '../../styles/auth/password-strength.css';
 
 export default function PasswordStrength({ senha, id }: { senha: string; id: string }) {
   const forca = Number(senha.length >= 8) + Number(/[A-Z]/.test(senha)) + Number(/[0-9]/.test(senha)) + Number(/[^A-Za-z0-9]/.test(senha));

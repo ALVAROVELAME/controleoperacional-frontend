@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import LegalLayout, { type SecaoLegal } from '../components/LegalLayout';
+import LegalLayout, { type SecaoLegal } from '../../components/LegalLayout';
 
 const SECOES: SecaoLegal[] = [
   {

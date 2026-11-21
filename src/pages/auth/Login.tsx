@@ -1,11 +1,11 @@
-import STYLES from '../styles/login.css?inline';
-import { Icon } from '../components/LandingIcons';
-import PUBLIC_STYLES from '../styles/publicstyles.css?inline';
-// src/pages/Login.tsx
+import STYLES from '../../styles/auth/login.css?inline';
+import { Icon } from '../../components/icons/LandingIcons';
+import PUBLIC_STYLES from '../../styles/publicstyles.css?inline';
+// src/pages/auth/Login.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { authService } from '../services/auth.service';
-import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../../services/auth.service';
+import { useAuth } from '../../contexts/AuthContext';
 
 /* ============================================================
    CSS do componente — Paleta: Blue + Slate

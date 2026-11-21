@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sanitizarTarefa, sanitizarLista, paraCriarRequest, paraAtualizarRequest } from '../src/mappers/tarefa.mapper';
+import { sanitizarTarefa, sanitizarLista, paraCriarRequest, paraAtualizarRequest } from '../../src/mappers/tarefa.mapper';
 
 describe('conversão de tarefas', () => {
   it('descarta entradas inválidas e normaliza respostas da API', () => {

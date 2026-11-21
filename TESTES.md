@@ -22,6 +22,8 @@ npm run build           # verificação TypeScript e build
 
 ## Cobertura implementada e próximos passos
 
-A suíte existente cobre ausência e expiração de sessão, login bem-sucedido e falho, cadastro com aceite, interceptor e erros HTTP, normalização e payloads de tarefas, criação, reversão de movimentação/exclusão, cache offline e controle básico do Pomodoro. Consulte o relatório para detalhes por arquivo; a lista acima é um inventário, não uma afirmação de cobertura completa.
+A suíte cobre autenticação e recuperação de senha, confirmação de e-mail, contratos HTTP, normalização e operações de tarefas, incluindo falhas e cache offline. Também verifica conclusão, retomada e persistência do Pomodoro e as interações de menu e pausa na página inicial. Consulte o relatório para detalhes por arquivo; a lista acima é um inventário, não uma afirmação de cobertura completa.
 
-Os demais cenários continuam pendentes, principalmente testes de ponta a ponta em navegadores reais (por exemplo, Playwright com uma API de teste controlada), acessibilidade automatizada e fluxos completos do dashboard e do Pomodoro. Testes em jsdom não validam layout, rendering real, nem o contrato com o backend implantado.
+Os testes de autenticação ficam em `tests/auth/`, os de tarefas e mapeamento em `tests/tarefas/`; os testes compartilhados e de outros fluxos permanecem na raiz de `tests/`.
+
+Os demais cenários continuam pendentes, incluindo a cobertura direta da interface do dashboard e das páginas legais, além de testes de ponta a ponta em navegadores reais (por exemplo, Playwright com uma API de teste controlada), acessibilidade automatizada e fluxos completos do dashboard e do Pomodoro. Testes em jsdom não validam layout, rendering real, nem o contrato com o backend implantado.

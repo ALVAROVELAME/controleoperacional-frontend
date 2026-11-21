@@ -71,9 +71,9 @@ font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);ov
 .ag-trust svg{color:var(--b2);flex-shrink:0}
 
 /* demo board */
-.ag-stage{perspective:1600px;min-width:0;width:100%;--rx:3deg;--ry:-6deg;animation:agStage 1s cubic-bezier(.2,.7,.2,1) .4s both}
+.ag-stage{perspective:1000px;min-width:0;width:100%;--rx:5deg;--ry:-9deg;animation:agStage 1s cubic-bezier(.2,.7,.2,1) .4s both}
 @keyframes agStage{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
-.ag-board{@apply relative;text-align:left;width:100%;max-width:100%;transform:rotateX(var(--rx)) rotateY(var(--ry));will-change:transform;transition:transform .3s ease-out;border-radius:24px;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid rgba(203,213,225,.28);box-shadow:0 60px 100px -40px rgba(34,211,238,.35),0 40px 80px -30px #000}
+.ag-board{@apply relative;text-align:left;width:100%;max-width:100%;transform:rotateX(var(--rx)) rotateY(var(--ry));transform-style:preserve-3d;will-change:transform;transition:transform .3s ease-out;border-radius:24px;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid rgba(203,213,225,.28);box-shadow:0 60px 100px -40px rgba(34,211,238,.35),0 40px 80px -30px #000}
 .ag-bar{@apply flex;flex-wrap:wrap;@apply items-center;gap:7px;padding:4px 6px 14px}
 .ag-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
 .ag-url{margin-left:12px;font-size:12px;color:var(--tx2);background:rgba(255,255,255,.07);padding:4px 14px;border-radius:8px;@apply overflow-hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 0;max-width:230px}
@@ -88,7 +88,7 @@ font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);ov
 @keyframes agCard{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}
 .ag-task small{display:block;margin-top:7px;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;width:fit-content}
 .t-r{background:#fee2e2;color:#7f1d1d}.t-a{background:#fef3c7;color:#78350f}.t-g{background:#dcfce7;color:#14532d}.t-b{background:#dbeafe;color:#1e3a8a}
-.ag-chip-f{@apply absolute flex items-center;gap:10px;padding:11px 15px;border-radius:14px;background:#fff;color:#0b1220;font-size:13px;font-weight:700;box-shadow:0 26px 44px -18px #000;animation:agFloat 6s ease-in-out infinite;z-index:2}
+.ag-chip-f{@apply absolute flex items-center;gap:10px;padding:11px 15px;border-radius:14px;background:#fff;color:#0b1220;font-size:13px;font-weight:700;box-shadow:0 26px 44px -18px #000;animation:agFloat 6s ease-in-out infinite;transform:translateZ(42px);z-index:2}
 .ag-chip-f small{display:block;font-size:12px;font-weight:500;color:#334155}
 .ag-chip-f .ic{width:34px;height:34px;border-radius:10px;@apply grid;place-items:center;background:#dbeafe;color:#1d4ed8}
 .ag-chip-f.a{top:-24px;right:-10px}.ag-chip-f.b{bottom:-24px;left:-18px;animation-delay:-3s}
@@ -97,11 +97,23 @@ font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);ov
 
 @media(max-width:1080px){
   .ag-hero-grid{grid-template-columns:1fr;gap:clamp(40px,7vw,64px)}
-  .ag-stage{--rx:0deg;--ry:0deg;max-width:580px;margin:0 auto}
+  .ag-stage{--rx:4deg;--ry:-6deg;max-width:580px;margin:0 auto}
   .ag-sub{max-width:560px}
   .ag-chip-f.a{right:0}.ag-chip-f.b{left:0}
 }
-@media(max-width:680px){.ag-chip-f{display:none}}
+@media(hover:none){
+  .ag-board{animation:agBoardSway 8s ease-in-out infinite}
+  .ag-paused .ag-board{animation-play-state:paused}
+}
+@keyframes agBoardSway{0%,100%{transform:rotateX(3deg) rotateY(-6deg)}50%{transform:rotateX(-2deg) rotateY(6deg)}}
+@media(max-width:680px){
+  .ag-stage{width:calc(100% - 24px)}
+  .ag-chip-f{transform:translateZ(20px);gap:6px;padding:7px 9px;border-radius:10px;font-size:11px;max-width:calc(50% - 8px)}
+  .ag-chip-f small{font-size:10px;line-height:1.3}
+  .ag-chip-f .ic{width:26px;height:26px;border-radius:8px;flex-shrink:0}
+  .ag-chip-f .ic svg{width:15px;height:15px}
+  .ag-chip-f.a{top:-36px;right:4px}.ag-chip-f.b{bottom:-24px;left:4px}
+}
 @media(max-width:620px){
   .ag-badge{font-size:12px;padding:7px 13px;margin-bottom:22px}
   .ag-sub{font-size:16px;margin-bottom:30px}
