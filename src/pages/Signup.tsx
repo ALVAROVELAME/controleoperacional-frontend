@@ -4,6 +4,8 @@ import PUBLIC_STYLES from '../styles/publicstyles.css?inline';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { authService } from '../services/auth.service';
+import PasswordStrength from '../components/PasswordStrength';
+import EyeIcon from '../components/EyeIcon';
 
 // ============================================================
 // Regras de validação
@@ -29,42 +31,6 @@ const VALIDACOES = {
 
 
 /* ============================================================
-   Subcomponente: ícone de olho (SVG)
-   ============================================================ */
-function EyeIcon({ aberto }: { aberto: boolean }) {
-  if (aberto) {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-        <line x1="1" y1="1" x2="23" y2="23" />
-      </svg>
-    );
-  }
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-/* ============================================================
    Componente
    ============================================================ */
 export default function Signup() {
@@ -84,27 +50,6 @@ export default function Signup() {
   useEffect(() => {
     setErro(null);
   }, [nome, email, senha, confirmar]);
-
-  // ---------- Força da senha ----------
-  const forca = useMemo(() => {
-    let score = 0;
-    if (senha.length >= 8) score++;
-    if (/[A-Z]/.test(senha)) score++;
-    if (/[0-9]/.test(senha)) score++;
-    if (/[^A-Za-z0-9]/.test(senha)) score++;
-    return score;
-  }, [senha]);
-
-  const forcaInfo = useMemo(() => {
-    const map = [
-      { label: 'Muito fraca', cor: '#b91c1c' },
-      { label: 'Fraca',       cor: '#c2410c' },
-      { label: 'Média',       cor: '#a16207' },
-      { label: 'Boa',         cor: '#0ea5e9' },
-      { label: 'Forte',       cor: '#2563eb' },
-    ];
-    return map[forca];
-  }, [forca]);
 
   // ---------- Validação geral do form ----------
   const erros = useMemo(() => {
@@ -338,42 +283,7 @@ export default function Signup() {
                         </button>
                       </div>
 
-                      {senha && (
-                        <>
-                          <div
-                            className="sg-strength"
-                            id="sg-strength"
-                            role="progressbar"
-                            aria-valuenow={forca}
-                            aria-valuemin={0}
-                            aria-valuemax={4}
-                            aria-label={`Força da senha: ${forcaInfo.label}`}
-                          >
-                            <div className="sg-strength-bar">
-                              <div
-                                className="sg-strength-fill"
-                                style={{
-                                  width: `${(forca / 4) * 100}%`,
-                                  background: forcaInfo.cor,
-                                }}
-                              />
-                            </div>
-                            <span
-                              className="sg-strength-label"
-                              style={{ color: forcaInfo.cor }}
-                            >
-                              {forcaInfo.label}
-                            </span>
-                          </div>
-
-                          <div className="sg-req-list">
-                            <Requisito ok={senha.length >= 6} texto="6+ caracteres" />
-                            <Requisito ok={/[A-Z]/.test(senha)} texto="1 maiúscula" />
-                            <Requisito ok={/[0-9]/.test(senha)} texto="1 número" />
-                            <Requisito ok={/[^A-Za-z0-9]/.test(senha)} texto="1 símbolo" />
-                          </div>
-                        </>
-                      )}
+                      {senha && <PasswordStrength senha={senha} id="sg-strength" />}
 
                       {mostrarErro('senha') && (
                         <span className="sg-error-msg" id="sg-erro-senha">
@@ -480,17 +390,5 @@ export default function Signup() {
         </div>
       </div>
     </>
-  );
-}
-
-// ============================================================
-// Subcomponente: Requisito da senha
-// ============================================================
-function Requisito({ ok, texto }: { ok: boolean; texto: string }) {
-  return (
-    <span className={`sg-req${ok ? ' is-ok' : ''}`} aria-live="polite">
-      <span className="sg-req-dot" aria-hidden="true">{ok ? '✓' : ''}</span>
-      {texto}
-    </span>
   );
 }

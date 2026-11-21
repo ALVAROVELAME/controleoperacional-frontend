@@ -32,6 +32,23 @@ describe('recuperação de senha', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Senha redefinida');
     expect(JSON.parse(api.history.post[0].data)).toEqual({ token: 'abc', senha: 'nova123' });
   });
+  it('atualiza os indicadores de força e permite mostrar as senhas', async () => {
+    const user = userEvent.setup();
+    render(<MemoryRouter initialEntries={['/?token=abc']}><ResetPassword /></MemoryRouter>);
+    const senha = screen.getByLabelText('Nova senha');
+    await user.type(senha, 'abcdef');
+    expect(screen.getByRole('progressbar', { name: 'Força da senha: Muito fraca' })).toHaveAttribute('aria-valuenow', '0');
+    expect(screen.getByText('6+ caracteres').closest('.sg-req')).toHaveClass('is-ok');
+    expect(screen.getByText('1 maiúscula').closest('.sg-req')).not.toHaveClass('is-ok');
+    await user.type(senha, 'A1!');
+    expect(screen.getByRole('progressbar', { name: 'Força da senha: Forte' })).toHaveAttribute('aria-valuenow', '4');
+    for (const requisito of ['1 maiúscula', '1 número', '1 símbolo']) expect(screen.getByText(requisito).closest('.sg-req')).toHaveClass('is-ok');
+    await user.type(screen.getByLabelText('Confirmar nova senha'), 'abcdefA1!');
+    expect(screen.getByText('Senhas conferem')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Mostrar senha' }));
+    expect(senha).toHaveAttribute('type', 'text');
+    expect(screen.getByLabelText('Confirmar nova senha')).toHaveAttribute('type', 'text');
+  });
   it('orienta quando o link não tem token', () => {
     render(<MemoryRouter><ResetPassword /></MemoryRouter>);
     expect(screen.getByRole('heading', { name: 'Link inválido' })).toBeInTheDocument();

@@ -317,57 +317,6 @@
   @apply flex items-center; gap: 6px;
 }
 
-/* ---------- Força da senha ---------- */
-.sg-strength { @apply flex items-center; gap: 10px; margin-top: 2px; }
-.sg-strength-bar {
-  flex: 1;
-  height: 5px;
-  background: #e2e8f0;
-  border-radius: 999px;
-  @apply overflow-hidden;
-}
-.sg-strength-fill {
-  height: 100%;
-  border-radius: 999px;
-  transition: width .25s ease, background .25s ease;
-}
-.sg-strength-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  min-width: 76px;
-  text-align: right;
-  letter-spacing: -.01em;
-}
-
-/* ---------- Requisitos ---------- */
-.sg-req-list {
-  @apply flex;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  margin-top: 2px;
-}
-.sg-req {
-  @apply inline-flex items-center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--muted);
-  transition: color .15s;
-}
-.sg-req.is-ok { color: var(--brand); font-weight: 600; }
-.sg-req-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  display: inline-grid; place-items: center;
-  background: #f1f5f9;
-  color: #94a3b8;
-  font-size: 9px; font-weight: 800;
-  flex-shrink: 0;
-  transition: background .15s, color .15s;
-}
-.sg-req.is-ok .sg-req-dot {
-  background: #dbeafe;
-  color: var(--brand);
-}
-
 /* ---------- Checkbox de termos ---------- */
 .sg-termos {
   @apply flex;
